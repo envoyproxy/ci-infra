@@ -1,0 +1,47 @@
+{
+  "variables": {},
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "region": "us-east-2",
+      "source_ami_filter": {
+        "filters": {
+          "virtualization-type": "hvm",
+          "name": "ubuntu/images/*ubuntu-bionic-18.04-arm64-server-*",
+          "root-device-type": "ebs"
+        },
+        "owners": [
+          "099720109477"
+        ],
+        "most_recent": true
+      },
+      "instance_type": "r6g.large",
+      "ssh_username": "ubuntu",
+      "ami_name": "envoy-azp-arm64-{{timestamp}}",
+      "run_volume_tags": {
+        "Project": "Packer"
+      },
+      "run_tags": {
+        "Project": "Packer"
+      },
+      "tags": {
+        "Project": "envoy-azp-arm64"
+      },
+      "security_group_ids": [
+        "sg-030a7a75a086f208c"
+      ],
+      "encrypt_boot": true
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "scripts",
+      "destination": "/home/ubuntu/scripts"
+    },
+    {
+      "type": "shell",
+      "script": "agent-setup.sh"
+    }
+  ]
+}

@@ -29,9 +29,9 @@ data "template_file" "init" {
   }
 }
 
-resource "aws_placement_group" "spread" {
-  name     = "${var.ami_prefix}_${var.azp_pool_name}_placement_group"
-  strategy = "spread"
+resource "aws_placement_group" "partition" {
+  name     = "${var.ami_prefix}_${var.azp_pool_name}_partition_placement_group"
+  strategy = "partition"
 }
 
 resource "aws_launch_template" "build_pool" {
@@ -70,7 +70,7 @@ resource "aws_launch_template" "build_pool" {
 
 resource "aws_autoscaling_group" "build_pool" {
   name            = local.asg_name
-  placement_group = aws_placement_group.spread.id
+  placement_group = aws_placement_group.partition.id
 
   min_size         = var.idle_instances_count
   desired_capacity = var.idle_instances_count

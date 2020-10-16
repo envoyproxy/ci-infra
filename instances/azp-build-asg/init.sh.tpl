@@ -41,7 +41,7 @@ Type=simple
 Restart=always
 RestartSec=1
 User=bazel-remote
-ExecStart=/usr/local/bin/bazel-remote --s3.endpoint s3.$AWS_DEFAULT_REGION.amazonaws.com --s3.bucket ${bazel_cache_bucket} --s3.prefix ${cache_prefix} --s3.iam_role_endpoint http://169.254.169.254 --max_size 30 --dir /dev/shm/bazel-remote-cache
+ExecStart=/usr/local/bin/bazel-remote --experimental_remote_asset_api --s3.endpoint s3.$AWS_DEFAULT_REGION.amazonaws.com --s3.bucket ${bazel_cache_bucket} --s3.prefix ${cache_prefix} --s3.iam_role_endpoint http://169.254.169.254 --max_size 30 --dir /dev/shm/bazel-remote-cache
 
 [Install]
 WantedBy=multi-user.target

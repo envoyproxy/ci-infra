@@ -32,7 +32,7 @@ data "template_file" "init" {
 resource "aws_launch_template" "build_pool" {
   name_prefix   = "${var.ami_prefix}_${var.azp_pool_name}"
   image_id      = data.aws_ami.azp_ci_image.id
-  instance_type = var.instance_type
+  instance_type = var.instance_types[0]
 
   block_device_mappings {
     device_name = "/dev/sda1"
@@ -64,7 +64,7 @@ resource "aws_launch_template" "build_pool" {
 }
 
 resource "aws_autoscaling_group" "build_pool" {
-  name            = local.asg_name
+  name = local.asg_name
 
   min_size         = var.idle_instances_count
   desired_capacity = var.idle_instances_count
@@ -80,9 +80,13 @@ resource "aws_autoscaling_group" "build_pool" {
         version            = "$Latest"
       }
 
-      override {
-        instance_type = var.instance_type
+      dynamic "override" {
+        for_each = toset(var.instance_types)
+        content {
+          instance_type = override.key
+        }
       }
+
     }
 
     instances_distribution {

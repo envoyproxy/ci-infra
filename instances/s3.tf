@@ -1,7 +1,6 @@
 resource "aws_s3_bucket" "token" {
   bucket = "cncf-envoy-token"
   acl    = "private"
-  region = "us-east-1"
 
   tags = {
     Environment = "Production"

@@ -33,7 +33,7 @@ sudo mkdir -p /srv/azure-pipelines
 sudo chown -R azure-pipelines:azure-pipelines /srv/azure-pipelines/
 
 [[ "${ARCH}" == "amd64" ]] && ARCH=x64
-AGENT_VERSION=2.175.2
+AGENT_VERSION=2.185.1
 AGENT_FILE=vsts-agent-linux-${ARCH}-${AGENT_VERSION}
 
 sudo -u azure-pipelines /bin/bash -c "wget -q -O - https://vstsagentpackage.azureedge.net/agent/${AGENT_VERSION}/${AGENT_FILE}.tar.gz | tar zx -C /srv/azure-pipelines"

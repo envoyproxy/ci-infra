@@ -9,7 +9,6 @@
     "build": "rm -rf ./node_modules/ && npm install --production && zip -r ../lambda-cleanup.zip ."
   },
   "license": "MIT",
-  "dependencies": {},
   "devDependencies": {
     "prettier": "^2.0.5"
   }

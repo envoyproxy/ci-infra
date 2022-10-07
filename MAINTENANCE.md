@@ -64,6 +64,16 @@ Golang is used to build https://github.com/buchgr/bazel-remote. Edit
 and change the link in the `curl` command to download the latest version of
 Golang from https://go.dev/dl/.
 
+### Build updated Packer images
+
+Once the updates are performed, build and push the new AMIs to AWS by running
+`packer build`. This step is safe to do, since Packer builds new images that
+won't be used by any existing VMs.
+
+### Test updated Packer images
+
+TODO(mum4k).
+
 ## Terraform update
 
 TODO(mum4k).

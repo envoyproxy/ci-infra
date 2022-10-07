@@ -8,7 +8,7 @@ ARCH=$(dpkg --print-architecture)
 
 sudo apt-get update
 sudo apt-get -y upgrade
-sudo apt-get install -y apt-transport-https ca-certificates gnupg-agent software-properties-common wget
+sudo apt-get install -y apt-transport-https build-essential ca-certificates gnupg-agent software-properties-common wget
 
 wget -q -O - https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo apt-key adv --list-public-keys --with-fingerprint --with-colons 0EBFCD88 2>/dev/null | grep 'fpr' | head -n1 | grep '9DC858229FC7DD38854AE2D88D81803C0EBFCD88'
@@ -33,7 +33,7 @@ sudo mkdir -p /srv/azure-pipelines
 sudo chown -R azure-pipelines:azure-pipelines /srv/azure-pipelines/
 
 [[ "${ARCH}" == "amd64" ]] && ARCH=x64
-AGENT_VERSION=2.185.1
+AGENT_VERSION=2.211.0
 AGENT_FILE=vsts-agent-linux-${ARCH}-${AGENT_VERSION}
 
 sudo -u azure-pipelines /bin/bash -c "wget -q -O - https://vstsagentpackage.azureedge.net/agent/${AGENT_VERSION}/${AGENT_FILE}.tar.gz | tar zx -C /srv/azure-pipelines"

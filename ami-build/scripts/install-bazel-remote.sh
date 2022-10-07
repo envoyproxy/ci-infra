@@ -9,7 +9,7 @@ trap "chmod +w -R ${BUILD_TMP} && rm -rf ${BUILD_TMP}" EXIT
 
 cd "${BUILD_TMP}"
 
-curl -fsSL https://golang.org/dl/go1.16.3.linux-${GOARCH}.tar.gz | tar zx
+curl -fsSL https://golang.org/dl/go1.19.2.linux-${GOARCH}.tar.gz | tar zx
 export GOPATH="${BUILD_TMP}/gopath"
 
 git clone https://github.com/buchgr/bazel-remote

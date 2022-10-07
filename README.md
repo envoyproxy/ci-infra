@@ -31,3 +31,7 @@ The general idea is:
 
   - A Lambda watches the EC2 CloudWatch instance termination event,
    and properly deregisters the agent from AZP.
+
+# Regulare maintenance
+
+The regular maintenance process is documented in MAINTENANCE.md.

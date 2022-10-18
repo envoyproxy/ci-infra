@@ -66,9 +66,13 @@ Golang from https://go.dev/dl/.
 
 ### Build updated Packer images
 
-Once the updates are performed, build and push the new AMIs to AWS by running
-`packer build`. This step is safe to do, since Packer builds new images that
-won't be used by any existing VMs.
+Once the updates are performed, build and push the new AMIs to AWS by running:
+
+- `packer build azp-x64.json`.
+- `packer build azp-arm64.json`.
+
+This step is safe to do, since Packer builds new images that won't be used by
+any existing VMs.
 
 ### Test updated Packer images
 

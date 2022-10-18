@@ -74,6 +74,19 @@ won't be used by any existing VMs.
 
 TODO(mum4k).
 
+## Node.js dependencies update
+
+The directories
+[instances/azp-cleanup-snapshots](instances/azp-cleanup-snapshots) and
+[instances/azp-dereg-lambda](instances/azp-dereg-lambda) contain two [AWS
+Lambdas](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html) written in
+Node.js.
+
+To update the dependencies, first make sure you have
+[npm-check-updates](https://www.npmjs.com/package/npm-check-updates) installed.
+
+Then go to each of the two directories and run `ncu -u`.
+
 ## Terraform update
 
 TODO(mum4k).

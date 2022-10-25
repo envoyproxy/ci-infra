@@ -34,4 +34,5 @@ The general idea is:
 
 # Regulare maintenance
 
-The regular maintenance process is documented in MAINTENANCE.md.
+The regular maintenance process is documented in
+[MAINTENANCE.md](MAINTENANCE.md).

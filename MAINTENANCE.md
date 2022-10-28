@@ -92,12 +92,30 @@ Then go to each of the two directories and run `ncu -u`.
 
 ## Terraform update
 
+### Build Node.js zip files
+
+Go to directories
+[instances/azp-cleanup-snapshots](instances/azp-cleanup-snapshots) and
+[instances/azp-dereg-lambda](instances/azp-dereg-lambda) and run:
+
+- `npm run build`
+
+This will produce two zip files in the [instances](instances) directory that
+will be used by Terraform.
+
+### Apply terraform configs
+
 You can refer to [this
 documentation](https://learn.hashicorp.com/tutorials/terraform/aws-build?in=terraform/aws-get-started)
 for details on how to manage AWS infrastructure using Terraform.
 
-The Terraform update step should only be done after the PR is reviewed and
-approved. In short, execute:
+First get the AZP token used between AZP and the CI Agent:
+
+- `export TF_VAR_azp_token=$(aws s3 cp s3://cncf-envoy-token/azp_token -)`
+
+
+Then run the Terraform update step. This should only be done after the PR is
+reviewed and approved. In short, execute:
 
 - `terraform init` - to initialize the local Terraform installation.
 - `terraform fmt` - to format any Terraform configuration files that were

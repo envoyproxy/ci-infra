@@ -49,5 +49,6 @@ sudo mv /home/ubuntu/scripts/*.sh /usr/local/bin
 
 sudo install-bazel-remote.sh
 sudo rm -rf /usr/local/bin/install-bazel-remote.sh
+sudo useradd -rms /bin/bash bazel-remote
 
 rm -rf /home/ubuntu/scripts /home/ubuntu/services

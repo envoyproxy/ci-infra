@@ -58,6 +58,13 @@ server image. This
 [tutorial](https://ubuntu.com/tutorials/search-and-launch-ubuntu-22-04-in-aws-using-cli#2-search-for-the-right-ami)
 outlines how to list images available in AWS.
 
+### Update the bazel-remote version
+
+Edit the
+[ami-build/scripts/install-bazel-remote.sh](ami-build/scripts/install-bazel-remote.sh)
+file and modify the target of the `wget` command to the latest released
+`bazel-remote` version from https://github.com/buchgr/bazel-remote/tags.
+
 ### Build updated AMIs with Packer
 
 Once the updates are performed, build and push the new AMIs to AWS by running:

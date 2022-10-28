@@ -30,8 +30,6 @@ rm -rf ~/.aws
 aws sts get-caller-identity | jq -r '.Arn' | grep -o "/${role_name}/"
 
 # Setup bazel remote cache S3 proxy
-sudo mkdir /dev/shm/bazel-remote-cache
-sudo chown ubuntu:ubuntu /dev/shm/bazel-remote-cache
 echo "
 [Unit]
 Description=Bazel Remote Cache Service
@@ -42,8 +40,8 @@ StartLimitIntervalSec=0
 Type=simple
 Restart=always
 RestartSec=1
-User=ubuntu
-ExecStart=/usr/bin/sudo /usr/bin/docker run -u 1000:1000 -v /dev/shm/bazel-remote-cache:/data -p 8080:8080 -p 9092:9092 buchgr/bazel-remote-cache --experimental_remote_asset_api --s3.endpoint s3.$AWS_DEFAULT_REGION.amazonaws.com --s3.bucket ${bazel_cache_bucket} --s3.prefix ${cache_prefix} --s3.iam_role_endpoint http://169.254.169.254 --max_size 30 --dir /data
+User=bazel-remote
+ExecStart=/usr/local/bin/bazel-remote --experimental_remote_asset_api --s3.endpoint s3.$AWS_DEFAULT_REGION.amazonaws.com --s3.bucket ${bazel_cache_bucket} --s3.prefix ${cache_prefix} --s3.iam_role_endpoint http://169.254.169.254 --max_size 30 --dir /dev/shm/bazel-remote-cache
 
 [Install]
 WantedBy=multi-user.target

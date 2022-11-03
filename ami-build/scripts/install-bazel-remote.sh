@@ -2,17 +2,8 @@
 
 set -eu -o pipefail
 
-export GOARCH=$(dpkg --print-architecture)
+export ARCH=$(dpkg --print-architecture)
+[[ "${ARCH}" == "amd64" ]] && ARCH="x86_64"
 
-BUILD_TMP="$(mktemp -d)"
-trap "chmod +w -R ${BUILD_TMP} && rm -rf ${BUILD_TMP}" EXIT
-
-cd "${BUILD_TMP}"
-
-curl -fsSL https://golang.org/dl/go1.16.3.linux-${GOARCH}.tar.gz | tar zx
-export GOPATH="${BUILD_TMP}/gopath"
-
-git clone https://github.com/buchgr/bazel-remote
-cd bazel-remote
-PATH="${BUILD_TMP}/go/bin:${PATH}" ./linux-build.sh
-sudo cp ./bazel-remote /usr/local/bin/bazel-remote
+sudo wget -O /usr/local/bin/bazel-remote https://github.com/buchgr/bazel-remote/releases/download/v2.3.9/bazel-remote-2.3.9-linux-${ARCH}
+sudo chmod 0755 /usr/local/bin/bazel-remote

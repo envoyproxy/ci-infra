@@ -1,7 +1,7 @@
 resource "aws_cloudwatch_event_rule" "every_week" {
   name                = "every-week"
   description         = "Fires once every week"
-  schedule_expression = "rate(7 day)"
+  schedule_expression = "rate(7 days)"
 }
 
 resource "aws_cloudwatch_event_target" "cleanup_every_week" {

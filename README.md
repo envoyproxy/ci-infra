@@ -16,7 +16,10 @@ The general idea is:
   - AMIs are built with all necessary tooling, for Linux this includes:
     - [`azure-pipelines-agent`](https://github.com/microsoft/azure-pipelines-agent),
       `awscli` and `jq` for agent setup.
+    - `bazelisk`
     - `docker`
+    - `skopeo`
+    - `expect` for example testing.
     - [`bazel-remote`](https://github.com/buchgr/bazel-remote) for local S3 bazel cache proxy.
 
   - AMIs are referenced by a launch template for an ASG.

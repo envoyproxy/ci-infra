@@ -5,18 +5,28 @@ set -e
 echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
 
 ARCH=$(dpkg --print-architecture)
+BAZELISK_VERSION=1.11.0
 
-sudo apt-get update
-sudo apt-get -y upgrade
-sudo apt-get install -y apt-transport-https ca-certificates gnupg-agent software-properties-common wget
+sudo apt-get -qq update
+sudo apt-get -qq upgrade -y
+sudo apt-get -qq install -y apt-transport-https ca-certificates gnupg-agent software-properties-common wget
 
 wget -q -O - https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo apt-key adv --list-public-keys --with-fingerprint --with-colons 0EBFCD88 2>/dev/null | grep 'fpr' | head -n1 | grep '9DC858229FC7DD38854AE2D88D81803C0EBFCD88'
 sudo add-apt-repository -y "deb [arch=${ARCH}] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 sudo apt-add-repository -y ppa:git-core/ppa
 
-sudo apt-get update
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io git awscli jq inotify-tools
+# Install bazelisk
+wget -qO - "https://github.com/bazelbuild/bazelisk/releases/download/v${BAZELISK_VERSION}/bazelisk-linux-amd64" | sudo tee /usr/local/bin/bazel > /dev/null
+sudo chmod +x /usr/local/bin/bazel
+
+# Install skopeo
+# https://software.opensuse.org/download/package?package=skopeo&project=devel%3Akubic%3Alibcontainers%3Astable#manualUbuntu
+echo 'deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_20.04/ /' | sudo tee /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list
+curl -fsSL https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_20.04/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/devel_kubic_libcontainers_stable.gpg > /dev/null
+
+sudo apt-get -qq update
+sudo apt-get -qq install -y docker-ce docker-ce-cli containerd.io git awscli jq inotify-tools expect skopeo
 
 sudo mkdir -p /etc/docker
 echo '{
@@ -52,3 +62,6 @@ sudo rm -rf /usr/local/bin/install-bazel-remote.sh
 sudo useradd -rms /bin/bash bazel-remote
 
 rm -rf /home/ubuntu/scripts /home/ubuntu/services
+
+# Allow passwordless sudo for azp worker
+echo 'azure-pipelines ALL=(ALL) NOPASSWD:ALL' | sudo tee -a /etc/sudoers

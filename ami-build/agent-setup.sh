@@ -4,6 +4,9 @@ set -e
 
 echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
 
+# https://github.com/microsoft/azure-pipelines-agent/issues/3599#issuecomment-1083564092
+export AZP_AGENT_USE_LEGACY_HTTP=true
+
 ARCH=$(dpkg --print-architecture)
 BAZELISK_VERSION=1.11.0
 
@@ -14,7 +17,6 @@ sudo apt-get -qq install -y apt-transport-https ca-certificates gnupg-agent soft
 wget -q -O - https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo apt-key adv --list-public-keys --with-fingerprint --with-colons 0EBFCD88 2>/dev/null | grep 'fpr' | head -n1 | grep '9DC858229FC7DD38854AE2D88D81803C0EBFCD88'
 sudo add-apt-repository -y "deb [arch=${ARCH}] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-sudo apt-add-repository -y ppa:git-core/ppa
 
 # Install bazelisk
 wget -qO - "https://github.com/bazelbuild/bazelisk/releases/download/v${BAZELISK_VERSION}/bazelisk-linux-amd64" | sudo tee /usr/local/bin/bazel > /dev/null
@@ -22,8 +24,8 @@ sudo chmod +x /usr/local/bin/bazel
 
 # Install skopeo
 # https://software.opensuse.org/download/package?package=skopeo&project=devel%3Akubic%3Alibcontainers%3Astable#manualUbuntu
-echo 'deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_20.04/ /' | sudo tee /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list
-curl -fsSL https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_20.04/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/devel_kubic_libcontainers_stable.gpg > /dev/null
+echo 'deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_22.04/ /' | sudo tee /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list > /dev/null
+curl -fsSL https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_22.04/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/devel_kubic_libcontainers_stable.gpg > /dev/null
 
 sudo apt-get -qq update
 sudo apt-get -qq install -y docker-ce docker-ce-cli containerd.io git awscli jq inotify-tools expect skopeo zstd
@@ -33,7 +35,7 @@ echo '{
   "ipv6": true,
   "fixed-cidr-v6": "2001:db8:1::/64"
 }' | sudo tee /etc/docker/daemon.json
-echo "::1 localhost" | sudo tee -a /etc/hosts
+echo "::1 localhost" | sudo tee -a /etc/hosts > /dev/null
 
 sudo systemctl enable docker
 sudo systemctl start docker
@@ -43,7 +45,8 @@ sudo mkdir -p /srv/azure-pipelines
 sudo chown -R azure-pipelines:azure-pipelines /srv/azure-pipelines/
 
 [[ "${ARCH}" == "amd64" ]] && ARCH=x64
-AGENT_VERSION=2.211.0
+# TODO(phlax): Switch off pre-release agent version asap.
+AGENT_VERSION=3.217.0
 AGENT_FILE=vsts-agent-linux-${ARCH}-${AGENT_VERSION}
 
 sudo -u azure-pipelines /bin/bash -c "wget -q -O - https://vstsagentpackage.azureedge.net/agent/${AGENT_VERSION}/${AGENT_FILE}.tar.gz | tar zx -C /srv/azure-pipelines"

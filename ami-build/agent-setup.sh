@@ -26,7 +26,7 @@ echo 'deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:
 curl -fsSL https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_20.04/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/devel_kubic_libcontainers_stable.gpg > /dev/null
 
 sudo apt-get -qq update
-sudo apt-get -qq install -y docker-ce docker-ce-cli containerd.io git awscli jq inotify-tools expect skopeo
+sudo apt-get -qq install -y docker-ce docker-ce-cli containerd.io git awscli jq inotify-tools expect skopeo zstd
 
 sudo mkdir -p /etc/docker
 echo '{

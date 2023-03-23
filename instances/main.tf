@@ -1,10 +1,19 @@
-provider "aws" {
-  region  = "us-east-2"
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.0"
+    }
+  }
 }
 
 provider "aws" {
-  alias   = "us-east-1"
-  region  = "us-east-1"
+  region = "us-east-2"
+}
+
+provider "aws" {
+  alias  = "us-east-1"
+  region = "us-east-1"
 }
 
 module "x64-large-build-pool" {

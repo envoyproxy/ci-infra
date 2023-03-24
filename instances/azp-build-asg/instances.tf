@@ -17,18 +17,6 @@ data "aws_ami" "azp_ci_image" {
   }
 }
 
-data "template_file" "init" {
-  template = file("${path.module}/init.sh.tpl")
-  vars = {
-    asg_name             = local.asg_name
-    azp_pool_name        = var.azp_pool_name
-    instance_profile_arn = aws_iam_instance_profile.asg_iam_instance_profile.arn
-    role_name            = aws_iam_role.asg_iam_role.name
-    bazel_cache_bucket   = var.bazel_cache_bucket
-    cache_prefix         = var.cache_prefix
-  }
-}
-
 resource "aws_launch_template" "build_pool" {
   name_prefix   = "${var.ami_prefix}_${var.azp_pool_name}"
   image_id      = data.aws_ami.azp_ci_image.id
@@ -59,7 +47,14 @@ resource "aws_launch_template" "build_pool" {
     http_endpoint = "enabled"
     http_tokens   = "optional"
   }
-  user_data              = base64encode(data.template_file.init.rendered)
+  user_data = base64encode(templatefile("${path.module}/init.sh.tpl", {
+    asg_name             = local.asg_name
+    azp_pool_name        = var.azp_pool_name
+    instance_profile_arn = aws_iam_instance_profile.asg_iam_instance_profile.arn
+    role_name            = aws_iam_role.asg_iam_role.name
+    bazel_cache_bucket   = var.bazel_cache_bucket
+    cache_prefix         = var.cache_prefix
+  }))
   vpc_security_group_ids = [aws_security_group.allow_ssh.id]
 }
 

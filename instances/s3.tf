@@ -15,14 +15,4 @@ resource "aws_s3_bucket" "build-cache" {
   tags = {
     Environment = "Production"
   }
-
-  lifecycle_rule {
-    id      = "all"
-    enabled = true
-    prefix  = ""
-
-    expiration {
-      days = 10
-    }
-  }
 }

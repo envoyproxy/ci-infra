@@ -1,7 +1,7 @@
 # The S3 bucket where Terraform for the salvo infra stores its state.
 
 resource "aws_s3_bucket" "salvo-infra-remote-state-bucket" {
-  bucket = "salvo-infra-tf-remote-state-us-east-2"
+  bucket = "salvo-infra-tf-remote-state-us-west-1"
 
   tags = {
     Environment = "Production"
@@ -30,9 +30,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "salvo-infra-remote-state-bucke
 
 terraform {
   backend "s3" {
-    bucket = "salvo-infra-tf-remote-state-us-east-2"
+    bucket = "salvo-infra-tf-remote-state-us-west-1"
     key    = "salvo/infra/terraform.tfstate"
-    region = "us-east-2"
+    region = "us-west-1"
   }
 
   required_version = ">= 1.4"

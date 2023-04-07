@@ -5,7 +5,7 @@ set -e
 # The version of the AZP agent to use.
 # See https://github.com/microsoft/azure-pipelines-agent/releases.
 AGENT_VERSION=2.218.1
-
+export DEBIAN_FRONTEND=noninteractive
 # Determine the architecture and package versions.
 ARCH=$(dpkg --print-architecture)
 if [ "${ARCH}" = "amd64" ]; then

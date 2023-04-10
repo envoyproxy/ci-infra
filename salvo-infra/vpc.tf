@@ -28,6 +28,11 @@ resource "aws_internet_gateway" "salvo-infra-internet-gateway" {
 
 resource "aws_route_table" "salvo-infra-route-table" {
   vpc_id = aws_vpc.salvo-infra-vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.salvo-infra-internet-gateway.id
+  }
 }
 
 resource "aws_route_table_association" "salvo-infra-packer-subnet-salvo-infra-route-table" {
@@ -43,11 +48,6 @@ resource "aws_subnet" "salvo-infra-packer-subnet" {
     Name    = "salvo-infra-packer-subnet"
     Project = "Packer"
   }
-}
-
-resource "aws_route_table_association" "salvo-infra-internet-gateway-salvo-infra-route-table" {
-  gateway_id     = aws_internet_gateway.salvo-infra-internet-gateway.id
-  route_table_id = aws_route_table.salvo-infra-route-table.id
 }
 
 resource "aws_default_network_acl" "salvo-infra-vpc-default-acl" {

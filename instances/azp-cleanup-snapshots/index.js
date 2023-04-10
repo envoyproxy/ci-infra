@@ -147,7 +147,7 @@ exports.handler = async function (_, context) {
       if (image['Tags'] == null) {
         return false;
       }
-      return ami_filter.exports.isAmiInScopeFromTags(image['Tags']);
+      return ami_filter.isAmiInScopeFromTags(image['Tags']);
     });
 
     // Find all unused AZP AMIs.

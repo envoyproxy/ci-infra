@@ -1,6 +1,16 @@
 const expect = require('chai').expect;
 const ami_filter = require('../ami_filter');
 
+// Creates an array of AMI tags with a single tag whose Project value is set to
+// the argument project.
+function createAmiTagsWithProject(project) {
+    const tag = new Object();
+    tag.Key = 'Project';
+    tag.Value = project;
+
+    return new Array(tag);
+}
+
 describe('isAmiInScopeFromTags unit test)', function () {
   it('should return false for empty tags', function () {
     const tags = [];
@@ -14,27 +24,23 @@ describe('isAmiInScopeFromTags unit test)', function () {
     expect(ami_filter.isAmiInScopeFromTags(tags)).to.equal(false);
   });
 
+  it('should return false for an out of scope value', function () {
+    const tags = createAmiTagsWithProject('something');
+    expect(ami_filter.isAmiInScopeFromTags(tags)).to.equal(false);
+  });
+
   it('should return true for envoy-azp-arm64 AMIs', function () {
-    const tag = new Object();
-    tag.Key = 'Project';
-    tag.Value = 'envoy-azp-arm64';
-    const tags = [tag];
+    const tags = createAmiTagsWithProject('envoy-azp-arm64');
     expect(ami_filter.isAmiInScopeFromTags(tags)).to.equal(true);
   });
 
   it('should return true for envoy-azp-x64 AMIs', function () {
-    const tag = new Object();
-    tag.Key = 'Project';
-    tag.Value = 'envoy-azp-x64';
-    const tags = [tag];
+    const tags = createAmiTagsWithProject('envoy-azp-x64');
     expect(ami_filter.isAmiInScopeFromTags(tags)).to.equal(true);
   });
 
   it('should return true for all Salvo AMIs', function () {
-    const tag = new Object();
-    tag.Key = 'Project';
-    tag.Value = 'Salvo';
-    const tags = [tag];
+    const tags = createAmiTagsWithProject('Salvo');
     expect(ami_filter.isAmiInScopeFromTags(tags)).to.equal(true);
   });
 });

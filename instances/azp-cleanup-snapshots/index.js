@@ -1,6 +1,8 @@
 const AWS = require('aws-sdk');
 const ec2 = new AWS.EC2();
 
+const ami_filter = require('ami_filter');
+
 async function describeAmis() {
   return await new Promise((resolve, reject) => {
     ec2.describeImages(
@@ -145,19 +147,7 @@ exports.handler = async function (_, context) {
       if (image['Tags'] == null) {
         return false;
       }
-
-      let has_envoy_project_tag = false;
-      image['Tags'].forEach((tagObj) => {
-        if (tagObj['Key'] != 'Project') {
-          return;
-        }
-        if (tagObj['Value'].indexOf('envoy-azp-') != 0) {
-          return;
-        }
-        has_envoy_project_tag = true;
-      });
-
-      return has_envoy_project_tag;
+      return ami_filter.exports.isAmiInScopeFromTags(image['Tags']);
     });
 
     // Find all unused AZP AMIs.

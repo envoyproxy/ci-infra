@@ -22,27 +22,34 @@ if [[ ! "$instance_id" =~ ^i- ]]; then
 fi
 
 function ensureCredentials() {
-  if [[ ! -f "/run/aws-metadata/creds.json" ]] || [[ ! -f "/run/aws-metadata/asg-name" ]] || [[ ! -f "/run/aws-metadata/iid.json" ]] || \
-     [[ ! -r "/run/aws-metadata/creds.json" ]] || [[ ! -r "/run/aws-metadata/asg-name" ]] || [[ ! -r "/run/aws-metadata/iid.json" ]]; then
-    echo "Failed to find Credentials for AWS Instance."
-    exit 5
-  fi
+    local credentials_json iid_json asg_name aws_access_key secret_access_key session_token expiration region
 
-  local readonly credentials_json=$(< /run/aws-metadata/creds.json)
-  local readonly iid_json=$(< /run/aws-metadata/iid.json)
-  local readonly asg_name=$(< /run/aws-metadata/asg-name)
-  local readonly aws_access_key=$(echo -n "$credentials_json" | jq -r .AccessKeyId)
-  local readonly secret_access_key=$(echo -n "$credentials_json" | jq -r .SecretAccessKey)
-  local readonly session_token=$(echo -n "$credentials_json" | jq -r .Token)
-  local readonly expiration=$(echo -n "$credentials_json" | jq -r .Expiration)
-  local readonly region=$(echo -n "$iid_json" | jq -r .region)
+    if [[ ! -f "/run/aws-metadata/creds.json" ]] || [[ ! -f "/run/aws-metadata/asg-name" ]] || [[ ! -f "/run/aws-metadata/iid.json" ]] || \
+           [[ ! -r "/run/aws-metadata/creds.json" ]] || [[ ! -r "/run/aws-metadata/asg-name" ]] || [[ ! -r "/run/aws-metadata/iid.json" ]]; then
+        echo "Failed to find Credentials for AWS Instance."
+        exit 5
+    fi
 
-  echo "Fetched Cached Credentials, Expire At: [$expiration]"
-  export AWS_ACCESS_KEY_ID="$aws_access_key"
-  export AWS_SECRET_ACCESS_KEY="$secret_access_key"
-  export AWS_SESSION_TOKEN="$session_token"
-  export AWS_DEFAULT_REGION="$region"
-  export CURRENT_ASG_NAME="$asg_name"
+    credentials_json=$(< /run/aws-metadata/creds.json)
+    iid_json=$(< /run/aws-metadata/iid.json)
+    asg_name=$(< /run/aws-metadata/asg-name)
+    aws_access_key=$(echo -n "$credentials_json" | jq -r .AccessKeyId)
+    secret_access_key=$(echo -n "$credentials_json" | jq -r .SecretAccessKey)
+    session_token=$(echo -n "$credentials_json" | jq -r .Token)
+    expiration=$(echo -n "$credentials_json" | jq -r .Expiration)
+    region=$(echo -n "$iid_json" | jq -r .region)
+
+    echo "Fetched Cached Credentials, Expire At: [$expiration]"
+    AWS_ACCESS_KEY_ID="$aws_access_key"
+    AWS_SECRET_ACCESS_KEY="$secret_access_key"
+    AWS_SESSION_TOKEN="$session_token"
+    AWS_DEFAULT_REGION="$region"
+    CURRENT_ASG_NAME="$asg_name"
+    export AWS_ACCESS_KEY_ID
+    export AWS_SECRET_ACCESS_KEY
+    export AWS_SESSION_TOKEN
+    export AWS_DEFAULT_REGION
+    export CURRENT_ASG_NAME
 }
 
 ensureCredentials

@@ -15,9 +15,45 @@ hostnamectl set-hostname "$instance_id"
 
 azp_token=$(aws s3 cp s3://cncf-envoy-token/azp_token -)
 
-export AWS_DEFAULT_REGION=$(curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-aws ec2 replace-iam-instance-profile-association --iam-instance-profile Arn=${instance_profile_arn} \
-  --association-id $(aws ec2 describe-iam-instance-profile-associations --filter=Name=instance-id,Values=$instance_id | jq -r '.IamInstanceProfileAssociations[0].AssociationId')
+# Configured vars
+asg_name="${asg_name:-}"
+azp_pool_name="${azp_pool_name:-}"
+bazel_cache_bucket="${bazel_cache_bucket:-}"
+cache_prefix="${cache_prefix:-}"
+instance_profile_arn="${instance_profile_arn:-}"
+role_name="${role_name:-}"
+
+if [[ -n "$asg_name" ]]; then
+    echo "\`asg_name\` is not set, exiting" >&2
+    exit 1
+fi
+if [[ -n "$azp_pool_name" ]]; then
+    echo "\`azp_pool_name\` is not set, exiting" >&2
+    exit 1
+fi
+if [[ -n "$bazel_cache_bucket" ]]; then
+    echo "\`bazel_cache_bucket\` is not set, exiting" >&2
+    exit 1
+fi
+if [[ -n "$cache_prefix" ]]; then
+    echo "\`cache_prefix\` is not set, exiting" >&2
+    exit 1
+fi
+if [[ -n "$instance_profile_arn" ]]; then
+    echo "\`instance_profile_arn\` is not set, exiting" >&2
+    exit 1
+fi
+if [[ -n "$role_name" ]]; then
+    echo "\`role_name\` is not set, exiting" >&2
+    exit 1
+fi
+
+AWS_DEFAULT_REGION=$(curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
+export AWS_DEFAULT_REGION
+ASSOCIATION_ID="$(aws ec2 describe-iam-instance-profile-associations --filter=Name=instance-id,Values="${instance_id}" | jq -r '.IamInstanceProfileAssociations[0].AssociationId')"
+aws ec2 replace-iam-instance-profile-association \
+    --iam-instance-profile Arn="$instance_profile_arn" \
+    --association-id "$ASSOCIATION_ID"
 
 # Configure Azure Pipelines Agent, this has to be done at runtime since
 # it will show up in the UI once we configure.
@@ -52,7 +88,16 @@ systemctl enable bazel-remote
 systemctl start bazel-remote
 
 # This is a hook to be run when a job starts
-(inotifywait /srv/azure-pipelines/_work -e CREATE && aws autoscaling detach-instances --instance-ids $instance_id --auto-scaling-group-name ${asg_name} --no-should-decrement-desired-capacity || true) &
+run_inotifywait () {
+    if inotifywait /srv/azure-pipelines/_work -e CREATE; then
+        aws autoscaling detach-instances \
+            --instance-ids "$instance_id" \
+            --auto-scaling-group-name "${asg_name}" \
+            --no-should-decrement-desired-capacity
+    fi
+}
+
+run_inotifywait &
 
 # Start AZP Agent.
 sudo -u azure-pipelines /bin/bash -c 'cd /srv/azure-pipelines && ./run.sh --once'

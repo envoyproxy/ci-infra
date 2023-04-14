@@ -33,7 +33,7 @@ wget -q -r -l1 -np \
   -P "${LIBSSL1_DIR}" \
   -A 'libssl1.1_1.1.1*ubuntu*amd64.deb' \
   "http://security.ubuntu.com/ubuntu/pool/main/o/openssl/"
-LIBSSL1_PACKAGE=`find "${LIBSSL1_DIR}" -type f -name \*.deb | sort | head -n 1`
+LIBSSL1_PACKAGE="$(find "${LIBSSL1_DIR}" -type f -name \*.deb | sort | head -n 1)"
 dpkg -i "${LIBSSL1_PACKAGE}"
 sed -i 's/openssl_conf = openssl_init/#openssl_conf = openssl_init/g' /etc/ssl/openssl.cnf
 

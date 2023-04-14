@@ -67,3 +67,21 @@ module "arm-build-pool" {
     aws = aws
   }
 }
+
+module "arm-2-build-pool" {
+  source = "./azp-build-asg"
+
+  ami_prefix           = "envoy-azp-arm64-2"
+  aws_account_id       = "457956385456"
+  azp_pool_name        = "arm-large-2"
+  azp_token            = var.azp_token
+  disk_size_gb         = 10
+  idle_instances_count = 1
+  instance_types       = ["c6gn.8xlarge"]
+  bazel_cache_bucket   = aws_s3_bucket.build-cache.bucket
+  cache_prefix         = "public-arm64"
+
+  providers = {
+    aws = aws
+  }
+}

@@ -1,0 +1,9 @@
+FROM node:latest@sha256:b913dbec87493fb38077268785a48ab9b28c5454d0b03ca4dadc13929baf318e
+WORKDIR /workspace
+ENV NODE_OPTIONS="--dns-result-order=ipv4first"
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get -qq -y update \
+    && apt-get -qq install -y --no-install-recommends zip \
+    && npm install -G npm-check-updates
+# CMD ["/workspace/node_modules/.bin/ncu", "-u"]
+CMD ["npm", "run", "build"]

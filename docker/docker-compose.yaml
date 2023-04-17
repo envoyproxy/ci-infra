@@ -1,0 +1,42 @@
+services:
+
+  packer:
+    build:
+      dockerfile: Dockerfile-packer
+    volumes:
+    - ../:/workspace
+    - "${HOME}/.aws/credentials:/root/.aws/credentials"
+    working_dir: /workspace/ami-build
+    environment:
+      PACKER_PLUGIN_PATH: /workspace/.packer.d/plugins
+      # PACKER_LOG: 1
+
+  aws:
+    build:
+      dockerfile: Dockerfile-aws
+    volumes:
+    - "${HOME}/.aws/credentials:/root/.aws/credentials"
+
+  npm_snap:
+    build:
+      dockerfile: Dockerfile-ncu
+    volumes:
+    - ../instances:/workspace/instances
+    working_dir: /workspace/instances/azp-cleanup-snapshots
+
+  npm_dereg:
+    build:
+      dockerfile: Dockerfile-ncu
+    volumes:
+    - ../instances:/workspace/instances
+    working_dir: /workspace/instances/azp-dereg-lambda
+
+  terraform:
+    build:
+      dockerfile: Dockerfile-terraform
+    volumes:
+    - ../:/workspace
+    - "${HOME}/.aws/credentials:/root/.aws/credentials"
+    working_dir: /workspace/instances
+    environment:
+      TF_VAR_azp_token: "${TF_VAR_azp_token}"

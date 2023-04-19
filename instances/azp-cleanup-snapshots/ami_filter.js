@@ -7,7 +7,7 @@
  * @returns {boolean} - true if the AMI is in scope and should be cleaned up.
  * False otherwise. Note that the Lambda only cleans up the AMI if unused.
 **/
-exports.isAmiInScopeFromTags = function (tags) {
+exports.isAmiInScopeFromTags = (tags) => {
   let has_in_scope_project_tag = false;
   tags.forEach((tagObj) => {
     if (tagObj['Key'] != 'Project') {

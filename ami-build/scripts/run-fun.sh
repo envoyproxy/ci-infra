@@ -12,6 +12,8 @@ _run_as_azp () {
 
 
 _run_inotifywait () {
+    # Watch the filesystem for agent activity, and disconnect from
+    # the ASG as soon as any happens.
     local instance_id="$1" asg_name="$2"
     if inotifywait "/srv/$AZP_USER/_work" -e CREATE; then
         aws autoscaling detach-instances \
@@ -29,7 +31,9 @@ machine_set_hostname () {
 }
 
 
-aws_asg_attach () {
+aws_reassociate_profile () {
+    # Once we have fetched the AZP token we no longer need creds to access that s3
+    # but we do need creds to the s3 local storage cache bucket.
     local association_id="$1" instance_profile_arn="$2"
     aws ec2 replace-iam-instance-profile-association \
         --iam-instance-profile "Arn=${instance_profile_arn}" \
@@ -38,15 +42,17 @@ aws_asg_attach () {
 
 
 aws_asg_detach_on_connect () {
+    # Detach from the ASG creating a free slot so another machine will be
+    # commissioned
     local instance_id="$1" asg_name="$2"
     _run_inotifywait "$instance_id" "$asg_name" &
 }
 
 
 aws_clear_credentials () {
+    # Clear AWS credentials and cache, and verify we're in right role before
+    # starting agent
     local role_name="$1"
-    ## Clear credentials and cache
-    # verify we're in right role before starting agent
     rm -rf ~/.aws
     aws sts get-caller-identity | jq -r '.Arn' | grep -o "/${role_name}/"
 }
@@ -77,6 +83,8 @@ aws_get_region () {
 
 
 azp_agent_configure () {
+    # Run the AZP agent configuration, this would normally happen at build
+    # time, but is required here to allow for the dynamic scaling model that is used.
     local azp_pool_name="$1" azp_token="$2"
     _run_as_azp "cd /srv/${AZP_USER} \
                 && ./config.sh --unattended \
@@ -101,6 +109,7 @@ azp_get_instance_id () {
 
 
 configure_bazel_remote () {
+    # Set up and start a systemd unit for the bazel local cache.
     local bazel_cache_bucket="$2" cache_prefix="$2" bazel_remote_args
     bazel_remote_args=(
         --experimental_remote_asset_api
@@ -153,9 +162,9 @@ _agent_start_init () {
     ## Get azp token, this must be done before reassociation
     azp_token="$(aws_get_azp_token)"
 
-    ## Attach to AWS ASG
+    ## Reassociate AWS iam profile
     aws_association_id="$(aws_get_association_id "${instance_id}")"
-    aws_asg_attach "$aws_association_id" "$instance_profile_arn"
+    aws_reassociate_profile "$aws_association_id" "$instance_profile_arn"
 
     ## Configure AZP agent
     # This has to be done at runtime since it will show up in the UI once we configure.

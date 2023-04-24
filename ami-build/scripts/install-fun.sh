@@ -58,7 +58,14 @@ _run_as_azp () {
 }
 
 
+APTGET="$(which apt-get)"
+apt-get () {
+    "${APTGET}" -qq "$@"
+}
+
+
 agent_install_cleanup () {
+    # Remove all the installation cruft.
     chown root:root /home/ubuntu/scripts/*.sh
     mv /home/ubuntu/scripts/run-fun.sh /usr/local/share
     chmod 0755 /home/ubuntu/scripts/*.sh
@@ -119,6 +126,11 @@ apt_install_pkgs () {
 
 
 apt_setup () {
+    # Set up the system for one-shot already-upgraded use
+    # unattended-upgrades can block apt-get and uses cycles
+    # that we dont want to give, so remove.
+    # Annoyingly its probably already running and doesnt die correctly,
+    # so we have to wait a second for it do so.
     echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
     systemctl stop unattended-upgrades
     sleep 1
@@ -129,6 +141,7 @@ apt_setup () {
 
 
 azp_setup_user () {
+    # User added to run the CI tasks.
     useradd -ms /bin/bash "$AZP_USER"
     mkdir -p "/srv/${AZP_USER}"
     chown -R "${AZP_USER}:${AZP_USER}" "/srv/${AZP_USER}/"

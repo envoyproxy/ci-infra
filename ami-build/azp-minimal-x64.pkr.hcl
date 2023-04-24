@@ -16,7 +16,8 @@ source "amazon-ebs" "envoy-azp-minimal-x64" {
       virtualization-type = "hvm"
     }
     most_recent = true
-    owners = ["099720109477"]
+    # TODO: figure out why setting this (incorrectly) worked and uncomment
+    # owners = ["679593333241"]
   }
   encrypt_boot = true
   ssh_username = "ubuntu"

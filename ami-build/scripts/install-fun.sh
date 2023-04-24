@@ -50,8 +50,6 @@ GITHUB_PK_SHA=uNiVztksCsDhcc0u9e8BujQXVUpKZIDTMczCvj3tD2s
 # https://software.opensuse.org/download/package?package=skopeo&project=devel%3Akubic%3Alibcontainers%3Astable#manualUbuntu
 KUBIC_REPO_URL="https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_20.04"
 
-alias apt-get="apt-get -qq"
-
 
 _run_as_azp () {
     sudo -u "$AZP_USER" /bin/bash -c "$1"

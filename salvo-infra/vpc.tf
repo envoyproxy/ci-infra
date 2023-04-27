@@ -50,6 +50,21 @@ resource "aws_subnet" "salvo-infra-packer-subnet" {
   }
 }
 
+resource "aws_route_table_association" "salvo-infra-control-vm-subnet-salvo-infra-route-table" {
+  subnet_id      = aws_subnet.salvo-infra-control-vm-subnet.id
+  route_table_id = aws_route_table.salvo-infra-route-table.id
+}
+
+resource "aws_subnet" "salvo-infra-control-vm-subnet" {
+  vpc_id     = aws_vpc.salvo-infra-vpc.id
+  cidr_block = "192.168.1.0/24"
+
+  tags = {
+    Name    = "salvo-infra-control-vm-subnet"
+    Project = "Salvo"
+  }
+}
+
 resource "aws_default_network_acl" "salvo-infra-vpc-default-acl" {
   default_network_acl_id = aws_vpc.salvo-infra-vpc.default_network_acl_id
   subnet_ids             = [aws_subnet.salvo-infra-packer-subnet.id]

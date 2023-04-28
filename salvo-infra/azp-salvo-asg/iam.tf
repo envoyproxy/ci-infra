@@ -1,4 +1,5 @@
-# Creates an IAM Role where instances themselves can then detach themselves from ASG.
+# Creates an IAM Role where instances can then detach themselves from the Auto
+# Scaling Group.
 data "aws_iam_policy_document" "asg_detach_salvo_instances" {
   statement {
     actions = [

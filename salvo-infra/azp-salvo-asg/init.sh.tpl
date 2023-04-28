@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# This is a template of an initialization script used by the Salvo Control VMs.
+
 set -e
 
 function terminate {

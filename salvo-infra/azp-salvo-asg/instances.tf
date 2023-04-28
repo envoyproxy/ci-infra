@@ -1,3 +1,6 @@
+# This file defines resources needed to deploy an Auto Scaling Group of Salvo
+# Control VMs.
+
 locals {
   asg_name = "${var.ami_prefix}_${var.azp_pool_name}_pool"
 }

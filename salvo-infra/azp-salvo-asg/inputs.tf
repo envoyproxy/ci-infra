@@ -1,3 +1,5 @@
+# This file contains the input variables for this Terraform module.
+
 # The VPC used by Salvo.
 variable "salvo_vpc" {
   type = object({ id = string })

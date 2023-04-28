@@ -1,4 +1,5 @@
-# Module that defines an AWS auto scaling group of VMs that listen to requests for jobs from Azure Pipelines (AZP).
+# Module that defines an AWS auto scaling group of Salvo Control VMs that
+# listen to requests for jobs from Azure Pipelines (AZP).
 
 terraform {
   required_providers {

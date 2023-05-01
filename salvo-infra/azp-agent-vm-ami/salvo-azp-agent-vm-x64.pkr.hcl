@@ -51,6 +51,11 @@ build {
     "source.amazon-ebs.salvo-azp-agent-vm-x64"
   ]
 
+  provisioner "file" {
+    source = "../../ami-build/scripts/"
+    destination = "/home/ubuntu/scripts"
+  }
+
   # See https://developer.hashicorp.com/packer/docs/provisioners/shell.
   provisioner "shell" {
     script          = "salvo-azp-agent-vm.sh"

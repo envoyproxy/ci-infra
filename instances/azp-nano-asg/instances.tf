@@ -42,7 +42,7 @@ resource "aws_launch_template" "nano_pool" {
   }
 
   instance_initiated_shutdown_behavior = "terminate"
-  key_name = "envoy-shared"
+  key_name = "envoy-shared2"
   metadata_options {
     http_endpoint = "enabled"
     http_tokens = "optional"

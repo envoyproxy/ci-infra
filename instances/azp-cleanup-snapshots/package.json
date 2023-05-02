@@ -4,12 +4,17 @@
   "description": "An Lambda that cleans up snapshots within AWS that were built for AZP.",
   "main": "index.js",
   "scripts": {
-    "format": "prettier --single-quote --trailing-comma all --write '*.js'",
-    "lint": "prettier --single-quote --trailing-comma all --check '*.js'",
-    "build": "rm -rf ./node_modules/ && npm install --production && zip -r ../lambda-cleanup.zip ."
+    "format": "prettier --single-quote --trailing-comma all --write '**/*.js'",
+    "lint": "prettier --single-quote --trailing-comma all --check '**/*.js'",
+    "build": "rm -rf ./node_modules/ && npm install --production && zip -r ../lambda-cleanup.zip .",
+    "test": "mocha"
   },
   "license": "MIT",
   "devDependencies": {
-    "prettier": "^2.7.1"
+    "prettier": "^2.8.7"
+  },
+  "dependencies": {
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0"
   }
 }

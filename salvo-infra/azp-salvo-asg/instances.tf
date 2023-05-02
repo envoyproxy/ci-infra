@@ -56,7 +56,7 @@ resource "aws_launch_template" "salvo_pool" {
     instance_profile_arn = aws_iam_instance_profile.asg_salvo_iam_instance_profile.arn
     role_name            = aws_iam_role.asg_salvo_iam_role.name
   }))
-  vpc_security_group_ids = ["$var.salvo_control_vm_security_group.id"]
+  vpc_security_group_ids = ["${var.salvo_control_vm_security_group.id}"]
 }
 
 resource "aws_autoscaling_group" "salvo_pool" {

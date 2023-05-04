@@ -1,6 +1,10 @@
 # The VPN and subnets where Salvo runs its infrastructure and Sandboxes.
 
 resource "aws_vpc" "salvo-infra-vpc" {
+  # 192.168.0.0/22 reserved for common infrastructure.
+  # 192.168.4.0/22 reserved for Salvo control VMs.
+  # 192.168.8.0/22 reserved for load generators.
+  # 192.168.12.0/22 reserved for backends.
   cidr_block = "192.168.0.0/16"
 
   tags = {
@@ -40,6 +44,7 @@ resource "aws_route_table_association" "salvo-infra-packer-subnet-salvo-infra-ro
   route_table_id = aws_route_table.salvo-infra-route-table.id
 }
 
+# The subnet used by Packer when creating AWS AMIs.
 resource "aws_subnet" "salvo-infra-packer-subnet" {
   vpc_id     = aws_vpc.salvo-infra-vpc.id
   cidr_block = "192.168.0.0/24"
@@ -55,12 +60,35 @@ resource "aws_route_table_association" "salvo-infra-control-vm-subnet-salvo-infr
   route_table_id = aws_route_table.salvo-infra-route-table.id
 }
 
+# The subnet used for communication between Salvo control VMs and the test drivers.
 resource "aws_subnet" "salvo-infra-control-vm-subnet" {
   vpc_id     = aws_vpc.salvo-infra-vpc.id
-  cidr_block = "192.168.1.0/24"
+  cidr_block = "192.168.4.0/22"
 
   tags = {
     Name    = "salvo-infra-control-vm-subnet"
+    Project = "Salvo"
+  }
+}
+
+# The subnet used for load generation, it connects Nighthawk load generator with Envoy.
+resource "aws_subnet" "salvo-infra-load-generator-subnet" {
+  vpc_id     = aws_vpc.salvo-infra-vpc.id
+  cidr_block = "192.168.8.0/22"
+
+  tags = {
+    Name    = "salvo-infra-load-generator-subnet"
+    Project = "Salvo"
+  }
+}
+
+# The subnet used for backend communication, it connects Envoy with its backends.
+resource "aws_subnet" "salvo-infra-backend-subnet" {
+  vpc_id     = aws_vpc.salvo-infra-vpc.id
+  cidr_block = "192.168.12.0/22"
+
+  tags = {
+    Name    = "salvo-infra-backend-subnet"
     Project = "Salvo"
   }
 }

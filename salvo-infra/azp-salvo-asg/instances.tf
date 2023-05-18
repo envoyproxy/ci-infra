@@ -21,9 +21,9 @@ data "aws_ami" "azp_ci_image" {
 }
 
 resource "aws_launch_template" "salvo_pool" {
-  name_prefix   = "${var.ami_prefix}_${var.azp_pool_name}"
-  image_id      = data.aws_ami.azp_ci_image.id
-  instance_type = var.instance_types[0]
+  name_prefix            = "${var.ami_prefix}_${var.azp_pool_name}"
+  image_id               = data.aws_ami.azp_ci_image.id
+  instance_type          = var.instance_types[0]
   update_default_version = true
 
   block_device_mappings {
@@ -93,9 +93,9 @@ resource "aws_autoscaling_group" "salvo_pool" {
   }
 
   tag {
-      key                 = "PoolName"
-      value               = var.azp_pool_name
-      propagate_at_launch = true
+    key                 = "PoolName"
+    value               = var.azp_pool_name
+    propagate_at_launch = true
   }
 
   vpc_zone_identifier = ["${var.salvo_control_vm_subnet.id}"]

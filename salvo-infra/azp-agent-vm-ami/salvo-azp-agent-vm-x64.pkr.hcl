@@ -56,7 +56,7 @@ build {
   }
 
   provisioner "file" {
-    source = "../../ami-build/scripts/"
+    source      = "../../ami-build/scripts/"
     destination = "/home/ubuntu/scripts/"
   }
 

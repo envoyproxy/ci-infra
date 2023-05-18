@@ -11,10 +11,10 @@ function terminate {
 trap terminate EXIT
 
 
-# shellcheck source=ami-build/scripts/run-fun.sh
-. /usr/local/share/run-fun.sh
+# shellcheck source=../ami-build/scripts/run-fun.sh
+. /home/ubuntu/scripts/run-fun.sh
 
-AWS_DEFAULT_REGION="$(aws_get_region)"
+AWS_DEFAULT_REGION="us-west-1"
 export AWS_DEFAULT_REGION
 
 

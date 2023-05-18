@@ -24,6 +24,7 @@ resource "aws_launch_template" "salvo_pool" {
   name_prefix   = "${var.ami_prefix}_${var.azp_pool_name}"
   image_id      = data.aws_ami.azp_ci_image.id
   instance_type = var.instance_types[0]
+  update_default_version = true
 
   block_device_mappings {
     device_name = "/dev/sda1"

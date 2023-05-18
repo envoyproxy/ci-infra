@@ -22,6 +22,8 @@ apt-get -qq upgrade -y
 
 # Insgtall required packages.
 apt-get -qq install -y \
+  git `# Needed by the AZP agent` \
+  inotify-tools `# Needed by the AZP agent` \
   jq `# Needed in the run script.` \
   unzip `# Needed to install AWS CLI.` \
   wget  `# Used in this script.`

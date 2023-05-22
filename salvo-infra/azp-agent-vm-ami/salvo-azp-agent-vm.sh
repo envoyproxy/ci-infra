@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/bash -eu
 
-set -e
+set -o pipefail
 
 # The version of the AZP agent to use.
 # See https://github.com/microsoft/azure-pipelines-agent/releases.
@@ -22,6 +22,9 @@ apt-get -qq upgrade -y
 
 # Insgtall required packages.
 apt-get -qq install -y \
+  git `# Needed by the AZP agent` \
+  inotify-tools `# Needed by the AZP agent` \
+  jq `# Needed in the run script.` \
   unzip `# Needed to install AWS CLI.` \
   wget  `# Used in this script.`
 

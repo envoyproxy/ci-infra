@@ -65,6 +65,8 @@ resource "aws_subnet" "salvo-infra-control-vm-subnet" {
   vpc_id     = aws_vpc.salvo-infra-vpc.id
   cidr_block = "192.168.4.0/22"
 
+  map_public_ip_on_launch = true
+
   tags = {
     Name    = "salvo-infra-control-vm-subnet"
     Project = "Salvo"

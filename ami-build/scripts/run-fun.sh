@@ -187,8 +187,15 @@ _agent_start_finalize () {
 
 
 agent_start_build () {
-    local bazel_cache_bucket="$6" \
-          cache_prefix="$7" \
+    # This should be called with the following args:
+    #  azp_pool_name
+    #  asg_name
+    #  instance_profile_arn
+    #  role_name
+    #  bazel_cache_bucket
+    #  cache_prefix
+    local bazel_cache_bucket="$5" \
+          cache_prefix="$6" \
           instance_id
 
     instance_id="$(azp_get_instance_id)"
@@ -203,6 +210,11 @@ agent_start_build () {
 
 
 agent_start_minimal () {
+    # This should be called with the following args:
+    #  azp_pool_name
+    #  asg_name
+    #  instance_profile_arn
+    #  role_name
     local instance_id
     instance_id="$(azp_get_instance_id)"
     _agent_start_init "$instance_id" "$@"

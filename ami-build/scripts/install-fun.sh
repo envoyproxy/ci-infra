@@ -49,6 +49,7 @@ DOCKER_PK=9DC858229FC7DD38854AE2D88D81803C0EBFCD88
 GITHUB_PK_SHA=uNiVztksCsDhcc0u9e8BujQXVUpKZIDTMczCvj3tD2s
 # https://software.opensuse.org/download/package?package=skopeo&project=devel%3Akubic%3Alibcontainers%3Astable#manualUbuntu
 KUBIC_REPO_URL="https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_20.04"
+SSL_INSTALL_URL=http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.19_amd64.deb
 
 
 _run_as_azp () {
@@ -189,6 +190,12 @@ install_bazel_remote () {
     chmod 0755 /usr/local/bin/bazel-remote
 }
 
+install_ssl () {
+    echo "Installing libssl from ${SSL_INSTALL_URL}"
+    wget -q -O /tmp/libssl.deb "$SSL_INSTALL_URL"
+    apt-get install -yy /tmp/libssl.deb
+    rm -rf /tmp/libssl.deb
+}
 
 ssh_client_github () {
     _run_as_azp "mkdir -p /home/${AZP_USER}/.ssh && touch /home/${AZP_USER}/.ssh/known_hosts"
@@ -208,6 +215,8 @@ _agent_setup_init () {
 
 _agent_setup_finalize () {
     azp_setup_user
+    # workaround for https://github.com/microsoft/azure-pipelines-agent/issues/3834
+    install_ssl
     azp_install_agent
     ssh_client_github
     apt_cleanup

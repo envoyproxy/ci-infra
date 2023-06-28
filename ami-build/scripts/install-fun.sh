@@ -48,7 +48,7 @@ DOCKER_PK=9DC858229FC7DD38854AE2D88D81803C0EBFCD88
 # This must be updated when Github change their public key.
 GITHUB_PK_SHA=uNiVztksCsDhcc0u9e8BujQXVUpKZIDTMczCvj3tD2s
 # https://software.opensuse.org/download/package?package=skopeo&project=devel%3Akubic%3Alibcontainers%3Astable#manualUbuntu
-KUBIC_REPO_URL="https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_20.04"
+KUBIC_REPO_URL="https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_22.04"
 SSL_INSTALL_URL=http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.19_amd64.deb
 
 
@@ -93,7 +93,7 @@ apt_add_docker () {
 
 
 apt_add_skopeo () {
-    echo "${KUBIC_REPO_URL} /" \
+    echo "deb ${KUBIC_REPO_URL} /" \
         | tee /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list
     curl -fsSL "${KUBIC_REPO_URL}/Release.key" \
         | gpg --dearmor \
@@ -188,6 +188,7 @@ install_bazel_remote () {
          /usr/local/bin/bazel-remote \
          "$BAZEL_REMOTE_INSTALL_URL"
     chmod 0755 /usr/local/bin/bazel-remote
+    useradd -rms /bin/bash bazel-remote
 }
 
 install_ssl () {

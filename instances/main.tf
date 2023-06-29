@@ -34,6 +34,24 @@ module "x64-large-build-pool" {
   }
 }
 
+module "small-x64-build-pool" {
+  source = "./azp-small-build-asg"
+
+  ami_prefix           = "envoy-azp-build-x64"
+  aws_account_id       = "457956385456"
+  azp_pool_name        = "envoy-x64-small"
+  azp_token            = var.azp_token
+  disk_size_gb         = 40
+  idle_instances_count = 1
+  instance_types       = ["t3.large"]
+  bazel_cache_bucket   = aws_s3_bucket.build-cache.bucket
+  cache_prefix         = "public-x64"
+
+  providers = {
+    aws = aws
+  }
+}
+
 module "nano-x64-minimal-pool" {
   source = "./azp-nano-asg"
 

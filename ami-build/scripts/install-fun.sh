@@ -142,6 +142,7 @@ apt_setup () {
 azp_setup_user () {
     # User added to run the CI tasks.
     useradd -ms /bin/bash "$AZP_USER"
+    gpasswd -a "$AZP_USER" docker
     mkdir -p "/srv/${AZP_USER}"
     chown -R "${AZP_USER}:${AZP_USER}" "/srv/${AZP_USER}/"
     echo "${AZP_USER} ALL=(ALL) NOPASSWD:ALL" | tee -a /etc/sudoers

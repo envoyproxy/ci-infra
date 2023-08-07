@@ -25,6 +25,19 @@ These are the steps taken when performing the regular maintenance:
 See https://github.com/envoyproxy/ci-infra/pull/7 for an example of a PR that
 performed this update.
 
+## Fetch the AZP token
+
+Before running the commands below you will need to fetch the AZP token used between AZP and the CI Agent:
+
+You can do this as follows:
+
+```console
+
+$ AWS_CLI=(docker compose -f docker/docker-compose.yaml run aws)
+$ export TF_VAR_azp_token=$(${AWS_CLI[@]} s3 cp s3://cncf-envoy-token/azp_token -)
+
+```
+
 ## Packer update
 
 All packer configuration files and scripts are in the [ami-build](ami-build/)
@@ -69,15 +82,27 @@ file and modify the target of the `wget` command to the latest released
 
 Once the updates are performed, build and push the new AMIs to AWS by running:
 
-- `packer build azp-x64.json`.
-- `packer build azp-arm64.json`.
+For each AMI that you wish to build with packer and the filename as follows:
+
+```console
+$ PACKER=(docker compose -f docker/docker-compose.yaml run packer)
+$ ${PACKER[@]} build azp-build-arm64.pkr.hcl
+...
+==> Wait completed after 14 minutes 33 seconds
+
+==> Builds finished. The artifacts of successful builds are:
+--> envoy-azp-build-arm64.amazon-ebs.envoy-azp-build-arm64: AMIs were created:
+us-east-2: ami-040ef97b32fd740ac
+```
 
 Note that this step should be done shortly before updating the infrastructure
 using Terraform, since the `azp-dereg-lambda` runs daily and removes all but
 the latest AMI. If the infrastructure isn't updated to use the latest AMI, the
 lambda may delete an AMI that is in use.
 
-## Node.js dependencies update
+## Building the AWS lambdas
+
+### Node.js dependencies update
 
 The directories
 [instances/azp-cleanup-snapshots](instances/azp-cleanup-snapshots) and
@@ -85,40 +110,71 @@ The directories
 Lambdas](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html) written in
 Node.js.
 
-To update the dependencies, first make sure you have
-[npm-check-updates](https://www.npmjs.com/package/npm-check-updates) installed.
+To update run the following
 
-Then go to each of the two directories and run `ncu -u`.
+```console
+$ NPM_SNAPSHOTS=(docker compose -f docker/docker-compose.yaml run npm_snap)
+$ NPM_DEREG=(docker compose -f docker/docker-compose.yaml run npm_dereg)
+$ ${NPM_SNAPSHOTS[@]} /workspace/node_modules/.bin/ncu -u
+$ ${NPM_DEREG[@]} /workspace/node_modules/.bin/ncu -u
+```
 
-## Terraform update
+### Build lambdas (Node.js zip files)
 
-### Build Node.js zip files
+```console
+$ ${NPM_SNAPSHOTS[@]}
+$ ${NPM_DEREG[@]}
+```
 
-Go to directories
-[instances/azp-cleanup-snapshots](instances/azp-cleanup-snapshots) and
-[instances/azp-dereg-lambda](instances/azp-dereg-lambda) and run:
+You should see the timestamps updated for the relevant zip files:
 
-- `npm run build`
+```console
+$ ls -alh instances/*zip
+-rw-r--r-- 1 root root 1.8M Aug  7 21:25 instances/lambda-cleanup.zip
+-rw-r--r-- 1 root root 467K Aug  7 21:25 instances/lambda-dereg.zip
+
+```
 
 This will produce two zip files in the [instances](instances) directory that
 will be used by Terraform.
 
-### Apply terraform configs
+## Terraform update
+
+### Test and apply terraform configs
 
 You can refer to [this
 documentation](https://learn.hashicorp.com/tutorials/terraform/aws-build?in=terraform/aws-get-started)
 for details on how to manage AWS infrastructure using Terraform.
 
-First get the AZP token used between AZP and the CI Agent:
-
-- `export TF_VAR_azp_token=$(aws s3 cp s3://cncf-envoy-token/azp_token -)`
-
+Ensure you have the AZP token described above.
 
 Then run the Terraform update step. This should only be done after the PR is
 reviewed and approved. In short, execute:
 
-- `terraform init` - to initialize the local Terraform installation.
-- `terraform fmt` - to format any Terraform configuration files that were
-  modified.
-- `terraform apply` - to update the AWS infrastructure applying local changes
-  and switching to the new AMIs.
+To initialize the local Terraform installation:
+
+
+```console
+$ TERRAFORM=(docker compose -f docker/docker-compose.yaml run terraform)
+$ ${TERRAFORM[@]} init
+
+```
+
+To format any Terraform configuration files that were modified.
+
+```console
+$ ${TERRAFORM[@]} fmt
+```
+
+To test what would be applied use plan:
+
+
+```console
+$ ${TERRAFORM[@]} plan
+```
+
+To update the AWS infrastructure applying local changes and switching to the new AMIs.
+
+```console
+$ ${TERRAFORM[@]} apply
+```

@@ -49,7 +49,12 @@ DOCKER_PK=9DC858229FC7DD38854AE2D88D81803C0EBFCD88
 GITHUB_PK_SHA=uNiVztksCsDhcc0u9e8BujQXVUpKZIDTMczCvj3tD2s
 # https://software.opensuse.org/download/package?package=skopeo&project=devel%3Akubic%3Alibcontainers%3Astable#manualUbuntu
 KUBIC_REPO_URL="https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_22.04"
-SSL_INSTALL_URL=http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.19_amd64.deb
+
+if [[ "$UNAME_ARCH" == "amd64" ]]; then
+    SSL_INSTALL_URL=http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.19_amd64.deb
+else
+    SSL_INSTALL_URL=http://ports.ubuntu.com/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_arm64.deb
+fi
 
 
 _run_as_azp () {
@@ -152,14 +157,6 @@ azp_setup_user () {
 azp_install_agent () {
     echo "Installing agent: ${AGENT_DL_URL}"
     _run_as_azp "wget -q -O - ${AGENT_DL_URL} | tar zx -C /srv/${AZP_USER}"
-    if [[ "$ARCH" == "arm64" ]]; then
-        sed -i \
-             s/amd64/arm64/g \
-             "/srv/${AZP_USER}/bin/installdependencies.sh"
-        sed -i \
-             s#http://security.ubuntu.com/ubuntu#http://ports.ubuntu.com/ubuntu-ports/#g \
-             "/srv/${AZP_USER}/bin/installdependencies.sh"
-    fi
     "/srv/${AZP_USER}/bin/installdependencies.sh"
 }
 
@@ -185,12 +182,13 @@ install_bazel () {
 
 install_bazel_remote () {
     echo "Installing bazel-remote (${BAZEL_REMOTE_VERSION}) from: ${BAZEL_REMOTE_INSTALL_URL}"
-    wget -O \
+    wget -q -O \
          /usr/local/bin/bazel-remote \
          "$BAZEL_REMOTE_INSTALL_URL"
     chmod 0755 /usr/local/bin/bazel-remote
     useradd -rms /bin/bash bazel-remote
 }
+
 
 install_ssl () {
     echo "Installing libssl from ${SSL_INSTALL_URL}"
@@ -198,6 +196,7 @@ install_ssl () {
     apt-get install -yy /tmp/libssl.deb
     rm -rf /tmp/libssl.deb
 }
+
 
 ssh_client_github () {
     _run_as_azp "mkdir -p /home/${AZP_USER}/.ssh && touch /home/${AZP_USER}/.ssh/known_hosts"

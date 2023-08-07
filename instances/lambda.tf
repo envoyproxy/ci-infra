@@ -3,7 +3,7 @@ resource "aws_lambda_function" "dereg_lambda" {
   function_name = "azp_dereg_lambda"
   role          = aws_iam_role.lambda_role.arn
   handler       = "index.handler"
-  runtime       = "nodejs12.x"
+  runtime       = "nodejs18.x"
 
   memory_size = 512
   timeout     = 180
@@ -23,7 +23,7 @@ resource "aws_lambda_function" "cleanup_lambda" {
   function_name = "ami_cleanup_lambda"
   role          = aws_iam_role.cleanup_lambda_role.arn
   handler       = "index.handler"
-  runtime       = "nodejs12.x"
+  runtime       = "nodejs18.x"
 
   memory_size = 512
   timeout     = 180

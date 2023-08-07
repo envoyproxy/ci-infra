@@ -11,7 +11,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "prettier": "^2.8.7"
+    "prettier": "^3.0.1"
   },
   "dependencies": {
     "chai": "^4.3.7",

@@ -110,7 +110,7 @@ azp_get_instance_id () {
 
 configure_bazel_remote () {
     # Set up and start a systemd unit for the bazel local cache.
-    local bazel_cache_bucket="$2" cache_prefix="$2" bazel_remote_args
+    local bazel_cache_bucket="$1" cache_prefix="$2" bazel_remote_args
     bazel_remote_args=(
         --experimental_remote_asset_api
         --enable_ac_key_instance_mangling

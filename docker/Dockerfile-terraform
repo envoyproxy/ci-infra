@@ -1,1 +1,1 @@
-FROM hashicorp/terraform:latest@sha256:9771ed388877ad208d596b895918b0ea068587e3f72a01ec0215cf972619df75
+FROM hashicorp/terraform:latest@sha256:59e3356a9ebc05e73d6bf89d2ae8a05372024c3971064b199708afb4b5d19e4e

@@ -9,6 +9,31 @@ data "aws_iam_policy_document" "asg_detach_small_instances" {
       "arn:aws:autoscaling:*:${var.aws_account_id}:autoScalingGroup:*:autoScalingGroupName/${local.asg_name}",
     ]
   }
+
+  statement {
+    actions = [
+      "s3:ListBucket"
+    ]
+    resources = [
+      "arn:aws:s3:::${var.bazel_cache_bucket}",
+    ]
+    condition {
+      test     = "StringLike"
+      variable = "s3:prefix"
+
+      values = [
+        "${var.cache_prefix}/*",
+      ]
+    }
+  }
+  statement {
+    actions = [
+      "s3:*Object"
+    ]
+    resources = [
+      "arn:aws:s3:::${var.bazel_cache_bucket}/${var.cache_prefix}/*",
+    ]
+  }
 }
 
 data "aws_iam_policy_document" "small_instance_assume_role_policy" {

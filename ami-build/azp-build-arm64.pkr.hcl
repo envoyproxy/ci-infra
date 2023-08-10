@@ -3,7 +3,7 @@
 
 source "amazon-ebs" "envoy-azp-build-arm64" {
   ami_name = "envoy-azp-build-arm64-{{timestamp}}"
-  instance_type = "r6g.large"
+  instance_type = "m6g.large"
   region = "us-east-2"
   security_group_ids = ["sg-030a7a75a086f208c"]
 

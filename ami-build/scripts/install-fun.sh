@@ -21,6 +21,7 @@ AGENT_FILE="vsts-agent-linux-${ARCH}-${AGENT_VERSION}"
 AGENT_DL_URL="https://vstsagentpackage.azureedge.net/agent/${AGENT_VERSION}/${AGENT_FILE}.tar.gz"
 APT_PKGS_AGENT=(
     awscli
+    btop
     git
     inotify-tools
     jq)

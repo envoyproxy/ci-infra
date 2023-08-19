@@ -17,10 +17,8 @@ export AWS_DEFAULT_REGION
 
 
 # shellcheck disable=SC2154
-agent_start_build \
+agent_start_minimal \
     "${azp_pool_name}" \
     "${asg_name}" \
     "${instance_profile_arn}" \
-    "${role_name}" \
-    "${bazel_cache_bucket}" \
-    "${cache_prefix}"
+    "${role_name}"

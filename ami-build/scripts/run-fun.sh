@@ -208,7 +208,6 @@ agent_start_build () {
     _agent_start_finalize "$instance_id" "$@"
 }
 
-
 agent_start_minimal () {
     # This should be called with the following args:
     #  azp_pool_name

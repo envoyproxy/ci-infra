@@ -22,6 +22,8 @@ AGENT_DL_URL="https://vstsagentpackage.azureedge.net/agent/${AGENT_VERSION}/${AG
 APT_PKGS_AGENT=(
     awscli
     btop
+    byobu
+    emacs-nox
     git
     inotify-tools
     jq)

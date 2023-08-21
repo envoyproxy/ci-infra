@@ -1,1 +1,1 @@
-FROM amazon/aws-cli:latest@sha256:6c331d2dd1874becae562d0a1dcb003156176944d6b06bda7202c18408bda41e
+FROM amazon/aws-cli:latest@sha256:f24b9eda50be874d2edca5e6e7237367a796ce5a4f2158c2ce2d4b275a04149a

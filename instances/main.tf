@@ -29,7 +29,7 @@ module "x64-large-build-pool" {
   idle_instances_count = 1
   instance_types       = ["r5a.8xlarge", "r5.8xlarge"]
   bazel_cache_bucket   = aws_s3_bucket.build-cache.bucket
-  cache_prefix         = "public-arm64"
+  cache_prefix         = "public-x64"
 
   providers = {
     aws = aws

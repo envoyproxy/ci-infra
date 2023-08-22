@@ -42,7 +42,7 @@ module "small-x64-build-pool" {
   azp_pool_name        = "envoy-x64-small"
   azp_token            = var.azp_token
   disk_size_gb         = 1000
-  idle_instances_count = 1
+  idle_instances_count = 2
   instance_types       = ["t3.large"]
 
   providers = {
@@ -87,7 +87,7 @@ module "arm-build-pool" {
 }
 
 module "small-arm-build-pool" {
-  source = "./azp-small-build-asg"
+  source = "./azp-cached-build-asg"
 
   ami_prefix           = "envoy-azp-build-arm64"
   aws_account_id       = "457956385456"
@@ -96,6 +96,8 @@ module "small-arm-build-pool" {
   disk_size_gb         = 1000
   idle_instances_count = 1
   instance_types       = ["t4g.large"]
+  bazel_cache_bucket   = aws_s3_bucket.build-cache.bucket
+  cache_prefix         = "public-arm64"
 
   providers = {
     aws = aws

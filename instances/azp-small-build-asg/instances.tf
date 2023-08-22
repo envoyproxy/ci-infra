@@ -52,8 +52,6 @@ resource "aws_launch_template" "small_pool" {
     azp_pool_name = var.azp_pool_name
     instance_profile_arn = aws_iam_instance_profile.asg_small_iam_instance_profile.arn
     role_name = aws_iam_role.asg_small_iam_role.name
-    bazel_cache_bucket   = var.bazel_cache_bucket
-    cache_prefix         = var.cache_prefix
   }))
   vpc_security_group_ids = [aws_security_group.allow_ssh.id]
 }

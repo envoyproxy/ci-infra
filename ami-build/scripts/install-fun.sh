@@ -109,6 +109,8 @@ apt_add_skopeo () {
 
 
 apt_cleanup () {
+    # Remove this again, as it seems to have been reinstalled
+    apt-get remove -y --purge unattended-upgrades
     apt-get autoremove -y --purge
     rm -rf /var/cache/apt /var/lib/apt/lists/*
 }
@@ -225,8 +227,17 @@ _agent_setup_finalize () {
     agent_install_cleanup
 }
 
-
 agent_setup_build () {
+    _agent_setup_init
+    apt_add_docker
+    apt_add_skopeo
+    apt_install_pkgs "${APT_PKGS_AGENT[@]}" "${APT_PKGS_BUILD[@]}"
+    install_bazel
+    configure_docker
+    _agent_setup_finalize
+}
+
+agent_setup_cached_build () {
     _agent_setup_init
     apt_add_docker
     apt_add_skopeo
@@ -236,7 +247,6 @@ agent_setup_build () {
     configure_docker
     _agent_setup_finalize
 }
-
 
 agent_setup_minimal () {
     _agent_setup_init

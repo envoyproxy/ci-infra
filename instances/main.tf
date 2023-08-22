@@ -19,7 +19,7 @@ provider "aws" {
 ## x64
 
 module "x64-large-build-pool" {
-  source = "./azp-build-asg"
+  source = "./azp-cached-build-asg"
 
   ami_prefix           = "envoy-azp-build-x64"
   aws_account_id       = "457956385456"
@@ -28,6 +28,8 @@ module "x64-large-build-pool" {
   disk_size_gb         = 2000
   idle_instances_count = 1
   instance_types       = ["r5a.8xlarge", "r5.8xlarge"]
+  bazel_cache_bucket   = aws_s3_bucket.build-cache.bucket
+  cache_prefix         = "public-arm64"
 
   providers = {
     aws = aws

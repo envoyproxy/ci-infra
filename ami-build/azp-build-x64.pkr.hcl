@@ -46,7 +46,7 @@ build {
   }
 
   provisioner "shell" {
-    script = "agent-setup-build.sh"
+    script = "agent-setup-cached-build.sh"
     execute_command = "{{.Vars}} sudo -S -E bash -eu '{{.Path}}'"
   }
 }

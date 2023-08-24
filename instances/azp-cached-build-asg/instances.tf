@@ -26,8 +26,10 @@ resource "aws_launch_template" "build_pool" {
     device_name = "/dev/sda1"
 
     ebs {
-      volume_size           = var.disk_size_gb
-      volume_type           = "gp2"
+      volume_size = var.disk_size_gb
+      volume_type = var.disk_volume_type
+      iops = var.disk_iops
+      throughput = var.disk_throughput
       delete_on_termination = true
       encrypted             = true
     }

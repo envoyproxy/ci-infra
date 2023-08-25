@@ -44,7 +44,7 @@ module "small-x64-build-pool" {
   azp_pool_name        = "envoy-x64-small"
   azp_token            = var.azp_token
   idle_instances_count = 2
-  instance_types       = ["m5.2xlarge"]
+  instance_types       = ["m5.xlarge"]
 
   providers = {
     aws = aws

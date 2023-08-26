@@ -65,7 +65,8 @@ resource "aws_autoscaling_group" "build_pool" {
 
   min_size         = var.idle_instances_count
   desired_capacity = var.idle_instances_count
-  max_size         = 50
+  max_size         = 100
+  protect_from_scale_in = true
 
   health_check_grace_period = 300
   health_check_type         = "EC2"

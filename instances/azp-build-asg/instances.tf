@@ -43,6 +43,10 @@ resource "aws_launch_template" "build_pool" {
     enabled = true
   }
 
+  hibernation_options {
+    configured = true
+  }
+
   instance_initiated_shutdown_behavior = "terminate"
   key_name                             = "envoy-shared2"
   metadata_options {

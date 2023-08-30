@@ -8,6 +8,7 @@ data "aws_subnet_ids" "default" {
     name = "availability-zone-id"
 
     values = [
+      "use2-az1",
       "use2-az2",
       "use2-az3",
     ]

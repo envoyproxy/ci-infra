@@ -7,7 +7,6 @@ data "aws_subnet_ids" "default" {
   filter {
     name = "availability-zone-id"
 
-    # The ones with r6g.* availability.
     values = [
       "use2-az2",
       "use2-az3",

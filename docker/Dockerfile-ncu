@@ -1,4 +1,4 @@
-FROM node:latest@sha256:8d9887b3b05d2e65598a18616c37cfc271346d12248dfcbeadd7b7bf4da1e827
+FROM node:latest@sha256:d9cdfd064b359b0d521cc5f775d8ac1b31da4a32d2dcdd19efa67e29148dff64
 WORKDIR /workspace
 ENV NODE_OPTIONS="--dns-result-order=ipv4first"
 ENV DEBIAN_FRONTEND=noninteractive

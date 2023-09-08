@@ -78,7 +78,7 @@ module "arm-build-pool" {
   azp_token            = var.azp_token
   disk_size_gb         = 1000
   idle_instances_count = 1
-  instance_types       = ["m6g.16xlarge"]
+  instance_types       = ["m6g.8xlarge", "m6g.16xlarge", "m6gd.8xlarge", "m6gd.16xlarge"]
   bazel_cache_bucket   = aws_s3_bucket.build-cache.bucket
   cache_prefix         = "public-arm64"
 

@@ -9,7 +9,7 @@ source "amazon-ebs" "envoy-azp-build-arm64" {
 
   source_ami_filter {
     filters = {
-      name = "ubuntu-minimal/images/hvm-ssd/ubuntu-jammy-22.04-arm64-minimal-*"
+      name = "ubuntu-minimal/images/hvm-ssd/ubuntu-jammy-22.04-arm64-*"
       root-device-type = "ebs"
       virtualization-type = "hvm"
     }

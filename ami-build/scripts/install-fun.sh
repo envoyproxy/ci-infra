@@ -45,23 +45,19 @@ BAZELISK_VERSION=1.11.0
 BAZELISK_INSTALL_URL="https://github.com/bazelbuild/bazelisk/releases/download/v${BAZELISK_VERSION}/bazelisk-linux-${UNAME_ARCH}"
 export DEBIAN_FRONTEND=noninteractive
 DOCKER_PK=9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+GH_AGENT_FILE="actions-runner-linux-${ARCH}-${AGENT_VERSION}"
+GH_AGENT_DL_URL="https://github.com/actions/runner/releases/download/v${AGENT_VERSION}/${GH_AGENT_FILE}.tar.gz"
+GH_USER=github
 # Hardcoded Github SSH RSA SHA to ensure we download the known key.
 # This must be updated when Github change their public key.
 GITHUB_PK_SHA=uNiVztksCsDhcc0u9e8BujQXVUpKZIDTMczCvj3tD2s
 # https://software.opensuse.org/download/package?package=skopeo&project=devel%3Akubic%3Alibcontainers%3Astable#manualUbuntu
 KUBIC_REPO_URL="https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_22.04"
 
-if [[ "$UNAME_ARCH" == "amd64" ]]; then
-    SSL_INSTALL_URL=http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.19_amd64.deb
-else
-    SSL_INSTALL_URL=http://ports.ubuntu.com/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_arm64.deb
-fi
 
-
-_run_as_azp () {
-    sudo -u "$AZP_USER" /bin/bash -c "$1"
+_run_as () {
+    sudo -u "$1" /bin/bash -c "$2"
 }
-
 
 APTGET="$(which apt-get)"
 apt-get () {
@@ -147,20 +143,31 @@ apt_setup () {
 }
 
 
-azp_setup_user () {
+setup_user () {
     # User added to run the CI tasks.
-    useradd -ms /bin/bash "$AZP_USER"
-    gpasswd -a "$AZP_USER" docker
-    mkdir -p "/srv/${AZP_USER}"
-    chown -R "${AZP_USER}:${AZP_USER}" "/srv/${AZP_USER}/"
-    echo "${AZP_USER} ALL=(ALL) NOPASSWD:ALL" | tee -a /etc/sudoers
+    useradd -ms /bin/bash "$1"
+    gpasswd -a "$1" docker
+    mkdir -p "/srv/${1}"
+    chown -R "${1}:${1}" "/srv/${1}/"
+    echo "${1} ALL=(ALL) NOPASSWD:ALL" | tee -a /etc/sudoers
 }
 
 
-azp_install_agent () {
-    echo "Installing agent: ${AGENT_DL_URL}"
-    _run_as_azp "wget -q -O - ${AGENT_DL_URL} | tar zx -C /srv/${AZP_USER}"
-    "/srv/${AZP_USER}/bin/installdependencies.sh"
+install_agent () {
+    echo "Installing agent: ${2}"
+    _run_as "$1" "wget -q -O - ${2} | tar zx -C /srv/${1}"
+    "/srv/${1}/bin/installdependencies.sh"
+}
+
+
+agent_install_cleanup () {
+    # Remove all the installation cruft.
+    chown root:root /home/ubuntu/scripts/*.sh
+    mv /home/ubuntu/scripts/run-fun.sh /usr/local/share
+    chmod 0755 /home/ubuntu/scripts/*.sh
+    rm /home/ubuntu/scripts/install-fun.sh
+    mv /home/ubuntu/scripts/*.sh /usr/local/bin
+    rm -rf /home/ubuntu/scripts /home/ubuntu/services
 }
 
 
@@ -193,18 +200,10 @@ install_bazel_remote () {
 }
 
 
-install_ssl () {
-    echo "Installing libssl from ${SSL_INSTALL_URL}"
-    wget -q -O /tmp/libssl.deb "$SSL_INSTALL_URL"
-    apt-get install -yy /tmp/libssl.deb
-    rm -rf /tmp/libssl.deb
-}
-
-
 ssh_client_github () {
-    _run_as_azp "mkdir -p /home/${AZP_USER}/.ssh && touch /home/${AZP_USER}/.ssh/known_hosts"
-    _run_as_azp "ssh-keyscan github.com | tee /home/${AZP_USER}/.ssh/known_hosts"
-    _run_as_azp "ssh-keygen -l -f /home/${AZP_USER}/.ssh/known_hosts | grep github.com | grep \"SHA256:${GITHUB_PK_SHA}\""
+    _run_as "$1" "mkdir -p /home/${1}/.ssh && touch /home/${1}/.ssh/known_hosts"
+    _run_as "$1" "ssh-keyscan github.com | tee /home/${1}/.ssh/known_hosts"
+    _run_as "$1" "ssh-keygen -l -f /home/${1}/.ssh/known_hosts | grep github.com | grep \"SHA256:${GITHUB_PK_SHA}\""
 }
 
 
@@ -218,11 +217,17 @@ _agent_setup_init () {
 
 
 _agent_setup_finalize () {
-    azp_setup_user
-    # workaround for https://github.com/microsoft/azure-pipelines-agent/issues/3834
-    install_ssl
-    azp_install_agent
-    ssh_client_github
+    setup_user "${AZP_USER}"
+    install_agent "${AZP_USER}" "$AGENT_DL_URL"
+    ssh_client_github "${AZP_USER}"
+    apt_cleanup
+    agent_install_cleanup
+}
+
+_gh_agent_setup_finalize () {
+    setup_user "${GH_USER}"
+    install_agent "${GH_USER}" "$GH_AGENT_DL_URL"
+    ssh_client_github "${GH_USER}"
     apt_cleanup
     agent_install_cleanup
 }
@@ -252,4 +257,15 @@ agent_setup_minimal () {
     _agent_setup_init
     apt_install_pkgs  "${APT_PKGS_AGENT[@]}"
     _agent_setup_finalize
+}
+
+gh_agent_setup_cached_build () {
+    _agent_setup_init
+    apt_add_docker
+    apt_add_skopeo
+    apt_install_pkgs "${APT_PKGS_AGENT[@]}" "${APT_PKGS_BUILD[@]}"
+    install_bazel
+    install_bazel_remote
+    configure_docker
+    _gh_agent_setup_finalize
 }

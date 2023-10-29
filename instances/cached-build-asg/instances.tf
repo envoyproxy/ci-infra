@@ -2,7 +2,7 @@ locals {
   asg_name = "${var.ami_prefix}_${var.pool_name}_pool"
 }
 
-data "aws_ami" "azp_ci_image" {
+data "aws_ami" "ci_image" {
   most_recent = true
   owners      = [var.aws_account_id]
 
@@ -19,7 +19,7 @@ data "aws_ami" "azp_ci_image" {
 
 resource "aws_launch_template" "build_pool" {
   name_prefix   = "${var.ami_prefix}_${var.pool_name}"
-  image_id      = data.aws_ami.azp_ci_image.id
+  image_id      = data.aws_ami.ci_image.id
   instance_type = var.instance_types[0]
 
   block_device_mappings {

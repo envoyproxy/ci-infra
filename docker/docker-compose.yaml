@@ -40,3 +40,4 @@ services:
     working_dir: /workspace/instances
     environment:
       TF_VAR_azp_token: "${TF_VAR_azp_token}"
+      TF_VAR_gh_token: "${TF_VAR_gh_token}"

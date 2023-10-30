@@ -18,10 +18,10 @@ export AWS_DEFAULT_REGION
 
 # shellcheck disable=SC2154
 agent_start_build \
-    "${azp_pool_name}" \
+    "${pool_name}" \
     "${asg_name}" \
     "${instance_profile_arn}" \
     "${role_name}" \
     "${bazel_cache_bucket}" \
     "${cache_prefix}" \
-    "azp_token"
+    "${token_name}"

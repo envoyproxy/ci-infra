@@ -15,6 +15,7 @@ services:
     build:
       dockerfile: Dockerfile-aws
     volumes:
+    - ../.temp:/tmp/host
     - "${HOME}/.aws/credentials:/root/.aws/credentials"
 
   npm_snap:

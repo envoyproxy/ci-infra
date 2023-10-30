@@ -51,22 +51,6 @@ module "small-x64-build-pool" {
   }
 }
 
-module "nano-x64-minimal-pool" {
-  source = "./azp-nano-asg"
-
-  ami_prefix           = "envoy-azp-minimal-x64"
-  aws_account_id       = "457956385456"
-  azp_pool_name        = "x64-nano"
-  azp_token            = var.azp_token
-  disk_size_gb         = 10
-  idle_instances_count = 1
-  instance_types       = ["t3.nano"]
-
-  providers = {
-    aws = aws
-  }
-}
-
 ## arm64
 
 module "arm-build-pool" {

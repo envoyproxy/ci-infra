@@ -2,14 +2,7 @@
 
 set -o pipefail
 
-
-AZP_USER=azure-pipelines
-GH_USER=github
-
-
-_run_as () {
-    sudo -u "$1" /bin/bash -c "$2"
-}
+. "$(dirname "${BASH_SOURCE[0]}")/common-fun.sh"
 
 
 _run_inotifywait () {
@@ -21,6 +14,7 @@ _run_inotifywait () {
     else
         AGENT_USER=$GH_USER
     fi
+    echo "Waiting for activity on: /srv/$AGENT_USER/_work"
     if inotifywait "/srv/$AGENT_USER/_work" -e CREATE; then
         aws autoscaling detach-instances \
             --instance-ids "$instance_id" \
@@ -40,6 +34,7 @@ aws_reassociate_profile () {
     # Once we have fetched the token we no longer need creds to access that s3
     # but we do need creds to the s3 local storage cache bucket.
     local association_id="$1" instance_profile_arn="$2"
+    echo "Reassociating AWS profile"
     aws ec2 replace-iam-instance-profile-association \
         --iam-instance-profile "Arn=${instance_profile_arn}" \
         --association-id "$association_id"
@@ -98,6 +93,7 @@ azp_agent_configure () {
     # Run the AZP agent configuration, this would normally happen at build
     # time, but is required here to allow for the dynamic scaling model that is used.
     local pool_name="$1" token="$2"
+    echo "Configuring AZP agent"
     _run_as "$AZP_USER" "cd /srv/${AZP_USER} \
                 && ./config.sh --unattended \
                                --acceptteeeula \
@@ -105,6 +101,7 @@ azp_agent_configure () {
                                --pool ${pool_name} \
                                --token ${token}"
     _run_as "$AZP_USER" "mkdir /srv/${AZP_USER}/_work"
+    echo "AZP agent configured"
 }
 
 
@@ -112,13 +109,17 @@ gh_agent_configure () {
     # Run the AZP agent configuration, this would normally happen at build
     # time, but is required here to allow for the dynamic scaling model that is used.
     local pool_name="$1" token="$2"
+    echo "Configuring Github agent"
+    GH_WORK_DIR="/srv/${GH_USER}/_work"
     _run_as "$GH_USER" "cd /srv/${GH_USER} \
                 && ./config.sh --unattended \
                                --url https://github.com/envoyproxy \
                                --token ${token} \
                                --name ${pool_name} \
-                               --runnergroup Envoy"
-    _run_as "$GH_USER" "mkdir /srv/${GH_USER}/_work"
+                               --runnergroup Envoy \
+                               --work ${GH_WORK_DIR}"
+    _run_as "$GH_USER" "mkdir ${GH_WORK_DIR}"
+    echo "Github agent configured"
 }
 
 
@@ -199,9 +200,13 @@ _agent_start_finalize () {
     ## Start agent listening
     aws_asg_detach_on_connect "$instance_id" "$token_name" "$asg_name"
     if [[ "$token_name" == "azp_token" ]]; then
+        echo "Running AZP agent"
         _run_as "$AZP_USER" "cd /srv/${AZP_USER} && ./run.sh --once"
+        echo "AZP agent ran"
     else
+        echo "Running Github agent"
         _run_as "$GH_USER" "cd /srv/${GH_USER} && ./run.sh"
+        echo "Github agent ran"
     fi
 }
 

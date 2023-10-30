@@ -160,17 +160,6 @@ install_agent () {
 }
 
 
-agent_install_cleanup () {
-    # Remove all the installation cruft.
-    chown root:root /home/ubuntu/scripts/*.sh
-    mv /home/ubuntu/scripts/run-fun.sh /usr/local/share
-    chmod 0755 /home/ubuntu/scripts/*.sh
-    rm /home/ubuntu/scripts/install-fun.sh
-    mv /home/ubuntu/scripts/*.sh /usr/local/bin
-    rm -rf /home/ubuntu/scripts /home/ubuntu/services
-}
-
-
 configure_docker () {
     mkdir -p /etc/docker
     echo '{
@@ -205,6 +194,7 @@ ssh_client_github () {
     _run_as "$1" "ssh-keyscan github.com | tee /home/${1}/.ssh/known_hosts"
     _run_as "$1" "ssh-keygen -l -f /home/${1}/.ssh/known_hosts | grep github.com | grep \"SHA256:${GITHUB_PK_SHA}\""
 }
+
 
 
 # Agent setups

@@ -8,6 +8,8 @@ if [[ -z "$AGENT_VERSION" ]]; then
    exit 1
 fi
 
+. "$(dirname "${BASH_SOURCE[0]}")/common-fun.sh"
+
 UNAME_ARCH=$(dpkg --print-architecture)
 if [[ "${UNAME_ARCH}" == "amd64" ]]; then
     ARCH=x64
@@ -38,7 +40,6 @@ APT_PKGS_BUILD=(
     expect
     skopeo
     zstd)
-AZP_USER=azure-pipelines
 BAZEL_REMOTE_VERSION=2.4.0
 BAZEL_REMOTE_INSTALL_URL="https://github.com/buchgr/bazel-remote/releases/download/v${BAZEL_REMOTE_VERSION}/bazel-remote-${BAZEL_REMOTE_VERSION}-linux-${FULL_ARCH}"
 BAZELISK_VERSION=1.11.0
@@ -47,17 +48,11 @@ export DEBIAN_FRONTEND=noninteractive
 DOCKER_PK=9DC858229FC7DD38854AE2D88D81803C0EBFCD88
 GH_AGENT_FILE="actions-runner-linux-${ARCH}-${AGENT_VERSION}"
 GH_AGENT_DL_URL="https://github.com/actions/runner/releases/download/v${AGENT_VERSION}/${GH_AGENT_FILE}.tar.gz"
-GH_USER=github
 # Hardcoded Github SSH RSA SHA to ensure we download the known key.
 # This must be updated when Github change their public key.
 GITHUB_PK_SHA=uNiVztksCsDhcc0u9e8BujQXVUpKZIDTMczCvj3tD2s
 # https://software.opensuse.org/download/package?package=skopeo&project=devel%3Akubic%3Alibcontainers%3Astable#manualUbuntu
 KUBIC_REPO_URL="https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_22.04"
-
-
-_run_as () {
-    sudo -u "$1" /bin/bash -c "$2"
-}
 
 APTGET="$(which apt-get)"
 apt-get () {

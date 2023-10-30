@@ -21,4 +21,5 @@ agent_start_minimal \
     "${azp_pool_name}" \
     "${asg_name}" \
     "${instance_profile_arn}" \
-    "${role_name}"
+    "${role_name}" \
+    "azp_token"

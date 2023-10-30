@@ -23,4 +23,5 @@ agent_start_build \
     "${instance_profile_arn}" \
     "${role_name}" \
     "${bazel_cache_bucket}" \
-    "${cache_prefix}"
+    "${cache_prefix}" \
+    "azp_token"

@@ -1,5 +1,5 @@
 locals {
-  asg_name = "${var.ami_prefix}_${var.azp_pool_name}_pool"
+  asg_name = "${var.ami_prefix}_${var.pool_name}_pool"
 }
 
 data "aws_ami" "azp_ci_image" {
@@ -18,7 +18,7 @@ data "aws_ami" "azp_ci_image" {
 }
 
 resource "aws_launch_template" "small_pool" {
-  name_prefix = "${var.ami_prefix}_${var.azp_pool_name}"
+  name_prefix = "${var.ami_prefix}_${var.pool_name}"
   image_id = data.aws_ami.azp_ci_image.id
   instance_type = var.instance_types[0]
 
@@ -51,9 +51,10 @@ resource "aws_launch_template" "small_pool" {
   }
   user_data = base64encode(templatefile("${path.module}/init.sh.tpl", {
     asg_name = local.asg_name
-    azp_pool_name = var.azp_pool_name
+    pool_name = var.pool_name
     instance_profile_arn = aws_iam_instance_profile.asg_small_iam_instance_profile.arn
     role_name = aws_iam_role.asg_small_iam_role.name
+    token_name = var.token_name
   }))
   vpc_security_group_ids = [aws_security_group.allow_ssh.id]
 }
@@ -94,7 +95,7 @@ resource "aws_autoscaling_group" "small_pool" {
   tags = [
     {
       key = "PoolName"
-      value = var.azp_pool_name
+      value = var.pool_name
       propagate_at_launch = true
     }
   ]

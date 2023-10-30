@@ -18,8 +18,8 @@ export AWS_DEFAULT_REGION
 
 # shellcheck disable=SC2154
 agent_start_minimal \
-    "${azp_pool_name}" \
+    "${pool_name}" \
     "${asg_name}" \
     "${instance_profile_arn}" \
     "${role_name}" \
-    "azp_token"
+    "${token_name}"

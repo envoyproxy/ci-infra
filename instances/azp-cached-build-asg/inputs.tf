@@ -1,7 +1,7 @@
 variable "ami_prefix" { type = string }
 variable "aws_account_id" { type = string }
-variable "azp_pool_name" { type = string }
-variable "azp_token" { type = string }
+variable "pool_name" { type = string }
+variable "token" { type = string }
 variable "disk_size_gb" {
   type = number
   default = 100
@@ -26,3 +26,4 @@ variable "idle_instances_count" { type = number }
 variable "instance_types" { type = list(string) }
 variable "bazel_cache_bucket" { type = string }
 variable "cache_prefix" { type = string }
+variable "token_name" { type = string }

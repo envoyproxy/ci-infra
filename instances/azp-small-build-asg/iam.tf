@@ -23,18 +23,18 @@ data "aws_iam_policy_document" "small_instance_assume_role_policy" {
 }
 
 resource "aws_iam_role" "asg_small_iam_role" {
-  name = "${var.ami_prefix}_${var.azp_pool_name}_IAMRole"
+  name = "${var.ami_prefix}_${var.pool_name}_IAMRole"
   assume_role_policy = data.aws_iam_policy_document.small_instance_assume_role_policy.json
 }
 
 resource "aws_iam_role_policy" "asg_small_iam_role_policy" {
-  name = "${var.ami_prefix}_${var.azp_pool_name}_IAMRolePolicy"
+  name = "${var.ami_prefix}_${var.pool_name}_IAMRolePolicy"
   role = aws_iam_role.asg_small_iam_role.id
   policy = data.aws_iam_policy_document.asg_detach_small_instances.json
 }
 
 resource "aws_iam_instance_profile" "asg_small_iam_instance_profile" {
-  name = "${var.ami_prefix}_${var.azp_pool_name}_IProfile"
+  name = "${var.ami_prefix}_${var.pool_name}_IProfile"
   role = aws_iam_role.asg_small_iam_role.name
 }
 
@@ -46,7 +46,7 @@ data "aws_iam_policy_document" "init_small_permissions" {
     ]
 
     resources = [
-      "arn:aws:s3:::cncf-envoy-token/azp_token",
+      "arn:aws:s3:::cncf-envoy-token/${var.token_name}",
     ]
   }
 
@@ -88,17 +88,17 @@ data "aws_iam_policy_document" "init_small_permissions" {
 }
 
 resource "aws_iam_role" "asg_small_init_iam_role" {
-  name = "${var.ami_prefix}_${var.azp_pool_name}_init_IAMRole"
+  name = "${var.ami_prefix}_${var.pool_name}_init_IAMRole"
   assume_role_policy = data.aws_iam_policy_document.small_instance_assume_role_policy.json
 }
 
 resource "aws_iam_role_policy" "asg_small_init_iam_role_policy" {
-  name = "${var.ami_prefix}_${var.azp_pool_name}_init_IAMRolePolicy"
+  name = "${var.ami_prefix}_${var.pool_name}_init_IAMRolePolicy"
   role = aws_iam_role.asg_small_init_iam_role.id
   policy = data.aws_iam_policy_document.init_small_permissions.json
 }
 
 resource "aws_iam_instance_profile" "asg_small_init_iam_instance_profile" {
-  name = "${var.ami_prefix}_${var.azp_pool_name}_init_IProfile"
+  name = "${var.ami_prefix}_${var.pool_name}_init_IProfile"
   role = aws_iam_role.asg_small_init_iam_role.name
 }

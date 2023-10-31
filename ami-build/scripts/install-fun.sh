@@ -63,6 +63,7 @@ apt-get () {
 agent_install_cleanup () {
     # Remove all the installation cruft.
     chown root:root /home/ubuntu/scripts/*.sh
+    mv /home/ubuntu/scripts/common-fun.sh /usr/local/share
     mv /home/ubuntu/scripts/run-fun.sh /usr/local/share
     chmod 0755 /home/ubuntu/scripts/*.sh
     rm /home/ubuntu/scripts/install-fun.sh

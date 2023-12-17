@@ -35,3 +35,39 @@ resource "aws_s3_bucket_public_access_block" "build-cache" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
+
+resource "aws_s3_bucket" "ci-cache" {
+  bucket = "envoy-ci-cache-us-east-2"
+  acl    = "private"
+
+  tags = {
+    Environment = "Production"
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "ci-cache" {
+  bucket = aws_s3_bucket.ci-cache.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket" "ci-cache-trusted" {
+  bucket = "envoy-ci-cache-trusted-us-east-2"
+  acl    = "private"
+
+  tags = {
+    Environment = "Production"
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "ci-cache-trusted" {
+  bucket = aws_s3_bucket.ci-cache-trusted.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}

@@ -98,8 +98,106 @@ resource "aws_iam_role_policy" "cleanup_ec2_perms" {
 
 module "iam_github_oidc_provider" {
   source    = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-provider"
+  tags = {
+    Environment = "Production"
+  }
+}
+
+locals {
+  s3_untrusted_policy = {
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:ListBucket",
+        ],
+        Resource = [
+          "arn:aws:s3:::envoy-ci-cache-us-east-2/*",
+          "arn:aws:s3:::envoy-ci-cache-us-east-2",
+        ],
+      },
+    ],
+  }
+  s3_untrusted_policy_json = jsonencode(local.s3_untrusted_policy)
+  s3_trusted_policy = {
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:ListBucket",
+        ],
+        Resource = [
+          "arn:aws:s3:::envoy-ci-cache-trusted-us-east-2/*",
+          "arn:aws:s3:::envoy-ci-cache-trusted-us-east-2",
+        ],
+      },
+    ],
+  }
+  s3_trusted_policy_json = jsonencode(local.s3_trusted_policy)
+}
+
+module "iam_github_oidc_untrusted_role" {
+  source    = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-role"
+  name = "GithubOIDCRoleS3CacheUntrusted"
+  subjects = [
+    "envoyproxy/envoy:*",
+    "envoyproxy/envoy-ci-staging:*",
+    "envoyproxy/envoy-setec:*",
+  ]
+
+  policies = {
+     S3BucketAccess = aws_iam_policy.s3_untrusted_policy.arn
+  }
 
   tags = {
     Environment = "Production"
   }
+}
+
+resource "aws_iam_policy" "s3_untrusted_policy" {
+  name        = "S3UntrustedCacheBucketAccessPolicy"
+  description = "Policy for untrusted s3 cache bucket access"
+  policy      = local.s3_untrusted_policy_json
+}
+
+resource "aws_iam_role_policy_attachment" "s3_untrusted_attachment" {
+  role       = module.iam_github_oidc_untrusted_role.name
+  policy_arn = aws_iam_policy.s3_untrusted_policy.arn
+}
+
+## Trusted cache
+
+module "iam_github_oidc_trusted_role" {
+  source    = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-role"
+  name = "GithubOIDCRoleS3CacheTrusted"
+  subjects = [
+    "envoyproxy/envoy:*",
+    "envoyproxy/envoy-ci-staging:*",
+    "envoyproxy/envoy-setec:*",
+  ]
+
+  policies = {
+     S3BucketAccess = aws_iam_policy.s3_trusted_policy.arn
+  }
+
+  tags = {
+    Environment = "Production"
+  }
+}
+
+resource "aws_iam_policy" "s3_trusted_policy" {
+  name        = "S3TrustedCacheBucketAccessPolicy"
+  description = "Policy for trusted s3 cache bucket access"
+  policy      = local.s3_trusted_policy_json
+}
+
+resource "aws_iam_role_policy_attachment" "s3_trusted_attachment" {
+  role       = module.iam_github_oidc_trusted_role.name
+  policy_arn = aws_iam_policy.s3_trusted_policy.arn
 }

@@ -110,7 +110,6 @@ data "aws_iam_policy_document" "init_permissions" {
       "*",
     ]
   }
-
 }
 
 resource "aws_iam_role" "asg_init_iam_role" {

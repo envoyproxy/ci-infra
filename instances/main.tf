@@ -131,21 +131,3 @@ module "gh-small-arm-build-pool" {
     aws = aws
   }
 }
-
-# x64
-
-module "gh-small-x64-build-pool" {
-  source = "./small-build-asg"
-
-  ami_prefix           = "envoy-gh-build-x64"
-  aws_account_id       = "457956385456"
-  pool_name            = "envoy-gh-x64-small"
-  token                = var.gh_token
-  idle_instances_count = 2
-  instance_types       = ["r6a.xlarge", "r6i.xlarge", "m4.xlarge", "t3.xlarge"]
-  token_name           = "gh_token"
-
-  providers = {
-    aws = aws
-  }
-}

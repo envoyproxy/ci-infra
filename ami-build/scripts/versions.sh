@@ -1,3 +1,4 @@
 #!/bin/bash -e
 
 AGENT_VERSION=3.238.0
+BAZEL_REMOTE_VERSION=2.4.3

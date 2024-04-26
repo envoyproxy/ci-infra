@@ -2,7 +2,7 @@
 
 set -eu -o pipefail
 
-BAZEL_REMOTE_VERSION=2.4.1
+BAZEL_REMOTE_VERSION=2.4.3
 
 export ARCH=$(dpkg --print-architecture)
 [[ "${ARCH}" == "amd64" ]] && ARCH="x86_64"

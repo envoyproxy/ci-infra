@@ -2,7 +2,7 @@
 
 set -o pipefail
 
-AGENT_VERSION=3.227.2
+. ./version.sh
 
 # shellcheck source=ami-build/scripts/install-fun.sh
 . /home/ubuntu/scripts/install-fun.sh

@@ -2,7 +2,8 @@
 
 set -o pipefail
 
-. ./version.sh
+# shellcheck source=ami-build/scripts/versions.sh
+. /home/ubuntu/scripts/versions.sh
 
 # shellcheck source=ami-build/scripts/install-fun.sh
 . /home/ubuntu/scripts/install-fun.sh

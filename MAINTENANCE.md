@@ -38,6 +38,17 @@ $ export TF_VAR_azp_token=$(${AWS_CLI[@]} s3 cp s3://cncf-envoy-token/azp_token 
 
 ```
 
+## Fetch the Github token
+
+Before running the commands below you will need to fetch the Github token used between Github and the CI Agent:
+
+You can do this as follows:
+
+```console
+$ AWS_CLI=(docker compose -f docker/docker-compose.yaml run aws)
+$ export TF_VAR_gh_token=$(${AWS_CLI[@]} s3 cp s3://cncf-envoy-token/gh_token -)
+```
+
 ## Packer update
 
 All packer configuration files and scripts are in the [ami-build](ami-build/)

@@ -1,1 +1,1 @@
-FROM hashicorp/packer:latest@sha256:1deccbc7bca80cccfc50218e269f87db33476fda79de814372db608715d000c0
+FROM hashicorp/packer:latest@sha256:d4c84384d7744b6ad1a0bd4d33daef364b784efb9e7441e39655397ea8ed62c0
